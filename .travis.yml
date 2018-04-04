@@ -1,0 +1,40 @@
+language: node_js  #设置语言
+
+node_js: stable  #设置相应的版本
+
+notifications:
+  email: # 构建完成后邮件通知
+    recipients:
+      - 330476629@qq.com
+      - xucp@outlook.com
+    on_success: change # always,change,never default: change
+    on_failure: always # always,change,never default: always
+
+# before_install:
+#  - rm -rf ./themes
+#  - git clone https://github.com/theme-next/hexo-theme-next ./themes/next
+
+install:
+  - npm install  #安装hexo及插件
+
+script:
+  - hexo clean  #清除
+  - hexo generate  #生成
+  - gulp #压缩
+
+after_script:
+  - cd ./public
+  - git init
+  - git config user.name "xuchengpeng"  #修改name
+  - git config user.email "330476629@qq.com"  #修改email
+  - git add .
+  - git commit -m "Site updated"
+  - git push --force --quiet "https://${TRAVIS_TOKEN}@${GH_REF}" master:master  #TRAVIS_TOKEN是在Travis中配置token的名称
+
+branches:
+  only:
+    - hexo  #只监测hexo分支，hexo是我的分支的名称，可根据自己情况设置
+
+env:
+ global:
+   - GH_REF: github.com/xuchengpeng/xuchengpeng.github.io.git # GitHub博客仓库的地址
