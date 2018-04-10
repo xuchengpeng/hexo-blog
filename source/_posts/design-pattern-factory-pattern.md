@@ -8,7 +8,7 @@ categories:
 - Design Pattern
 tags:
 - Design Pattern
-- 工厂模式
+- 创建型模式
 ---
 
 工厂模式（Factory Pattern）是 Java 中最常用的设计模式之一。这种类型的设计模式属于创建型模式，它提供了一种创建对象的最佳方式。
