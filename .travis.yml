@@ -10,6 +10,11 @@ notifications:
     on_success: change # always,change,never default: change
     on_failure: always # always,change,never default: always
 
+cache:
+  apt: true
+  directories:
+    - node_modules
+
 # before_install:
 #  - rm -rf ./themes
 #  - git clone https://github.com/theme-next/hexo-theme-next ./themes/next
