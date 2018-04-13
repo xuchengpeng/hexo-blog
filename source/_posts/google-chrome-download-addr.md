@@ -1,7 +1,7 @@
 ---
 title:  "Google Chrome下载地址"
 date: 2017-11-21 10:21:00
-updated: 2018-03-30 21:54:00
+updated: 2018-04-13 08:00:00
 comments: true
 categories: 
   - Software
@@ -40,79 +40,79 @@ https://www.google.com/dl/release2/chrome/ANrN1DH6DNlJ_65.0.3325.181/65.0.3325.1
 SHA1：6DA027C94835FCF04A14601F29893788A9BFBA90，SHA256：400A52DCC293E6594ACC18988958D4C72C1D3DAC893925C80D85760825F789B3
 
 ## Beta 测试版 32位
-最新版本：66.0.3359.66，文件大小：46.442MB，查询时间：2018-03-29 02:43
+最新版本：66.0.3359.106，文件大小：46.449MB，查询时间：2018-04-13 02:13
 
 下载地址：
 
-http://redirector.gvt1.com/edgedl/release2/chrome/AKAKfPHZ2scj_66.0.3359.66/66.0.3359.66_chrome_installer.exe
-https://redirector.gvt1.com/edgedl/release2/chrome/AKAKfPHZ2scj_66.0.3359.66/66.0.3359.66_chrome_installer.exe
-http://dl.google.com/release2/chrome/AKAKfPHZ2scj_66.0.3359.66/66.0.3359.66_chrome_installer.exe
-https://dl.google.com/release2/chrome/AKAKfPHZ2scj_66.0.3359.66/66.0.3359.66_chrome_installer.exe
-http://www.google.com/dl/release2/chrome/AKAKfPHZ2scj_66.0.3359.66/66.0.3359.66_chrome_installer.exe
-https://www.google.com/dl/release2/chrome/AKAKfPHZ2scj_66.0.3359.66/66.0.3359.66_chrome_installer.exe
-SHA1：A4F3DA06ED8E8F3E213211C565C95695EF777EF6，SHA256：06ED448D3CC7505E941BA7E722CE033144B1C08C3028BE7F3CCC975A93CEAF73
+http://redirector.gvt1.com/edgedl/release2/chrome/PDDeJI7lISc_66.0.3359.106/66.0.3359.106_chrome_installer.exe
+https://redirector.gvt1.com/edgedl/release2/chrome/PDDeJI7lISc_66.0.3359.106/66.0.3359.106_chrome_installer.exe
+http://dl.google.com/release2/chrome/PDDeJI7lISc_66.0.3359.106/66.0.3359.106_chrome_installer.exe
+https://dl.google.com/release2/chrome/PDDeJI7lISc_66.0.3359.106/66.0.3359.106_chrome_installer.exe
+http://www.google.com/dl/release2/chrome/PDDeJI7lISc_66.0.3359.106/66.0.3359.106_chrome_installer.exe
+https://www.google.com/dl/release2/chrome/PDDeJI7lISc_66.0.3359.106/66.0.3359.106_chrome_installer.exe
+SHA1：8E5A4279632C5697982B4B658187D15084B672A2，SHA256：A80B692E49864BE51929712F1B80F8D6E8A8AB6081F056AEB2F74689B1B8E42D
 
 ## Beta 测试版 64位
-最新版本：66.0.3359.66，文件大小：46.858MB，查询时间：2018-03-29 02:43
+最新版本：66.0.3359.106，文件大小：46.866MB，查询时间：2018-04-13 02:13
 
 下载地址：
 
-http://redirector.gvt1.com/edgedl/release2/chrome/ALDz1bv_oEdY_66.0.3359.66/66.0.3359.66_chrome_installer.exe
-https://redirector.gvt1.com/edgedl/release2/chrome/ALDz1bv_oEdY_66.0.3359.66/66.0.3359.66_chrome_installer.exe
-http://dl.google.com/release2/chrome/ALDz1bv_oEdY_66.0.3359.66/66.0.3359.66_chrome_installer.exe
-https://dl.google.com/release2/chrome/ALDz1bv_oEdY_66.0.3359.66/66.0.3359.66_chrome_installer.exe
-http://www.google.com/dl/release2/chrome/ALDz1bv_oEdY_66.0.3359.66/66.0.3359.66_chrome_installer.exe
-https://www.google.com/dl/release2/chrome/ALDz1bv_oEdY_66.0.3359.66/66.0.3359.66_chrome_installer.exe
-SHA1：65C25755A5219A4671B93E00948692E1F8D698B2，SHA256：7D9325C63A90882EAF72F61BA871959C772ED821BF26EA554D3BC479B7EE3E64
+http://redirector.gvt1.com/edgedl/release2/chrome/ANoZhCbTvhzN_66.0.3359.106/66.0.3359.106_chrome_installer.exe
+https://redirector.gvt1.com/edgedl/release2/chrome/ANoZhCbTvhzN_66.0.3359.106/66.0.3359.106_chrome_installer.exe
+http://dl.google.com/release2/chrome/ANoZhCbTvhzN_66.0.3359.106/66.0.3359.106_chrome_installer.exe
+https://dl.google.com/release2/chrome/ANoZhCbTvhzN_66.0.3359.106/66.0.3359.106_chrome_installer.exe
+http://www.google.com/dl/release2/chrome/ANoZhCbTvhzN_66.0.3359.106/66.0.3359.106_chrome_installer.exe
+https://www.google.com/dl/release2/chrome/ANoZhCbTvhzN_66.0.3359.106/66.0.3359.106_chrome_installer.exe
+SHA1：8079E6907ADEABA8772239A635034368E11C2A52，SHA256：6E1B272B99EB167939F8BE1D5B1500EF3DE9CAD1181C3FB98BCCF56A8D5BFFCC
 
 ## Dev 开发版 32位
-最新版本：67.0.3381.1，文件大小：46.902MB，查询时间：2018-03-28 07:43
+最新版本：67.0.3393.4，文件大小：47.057MB，查询时间：2018-04-12 02:43
 
 下载地址：
 
-http://redirector.gvt1.com/edgedl/release2/chrome/QmIi5UTZihA_67.0.3381.1/67.0.3381.1_chrome_installer.exe
-https://redirector.gvt1.com/edgedl/release2/chrome/QmIi5UTZihA_67.0.3381.1/67.0.3381.1_chrome_installer.exe
-http://dl.google.com/release2/chrome/QmIi5UTZihA_67.0.3381.1/67.0.3381.1_chrome_installer.exe
-https://dl.google.com/release2/chrome/QmIi5UTZihA_67.0.3381.1/67.0.3381.1_chrome_installer.exe
-http://www.google.com/dl/release2/chrome/QmIi5UTZihA_67.0.3381.1/67.0.3381.1_chrome_installer.exe
-https://www.google.com/dl/release2/chrome/QmIi5UTZihA_67.0.3381.1/67.0.3381.1_chrome_installer.exe
-SHA1：780F9DE474A85A6B874873BE0BA8FB757ED29D9A，SHA256：F32DF9F454971BF1583CDBCC167B86AFE495F8A306B00701D86ADFE753314F8D
+http://redirector.gvt1.com/edgedl/release2/chrome/AK9Wp3fza_7G_67.0.3393.4/67.0.3393.4_chrome_installer.exe
+https://redirector.gvt1.com/edgedl/release2/chrome/AK9Wp3fza_7G_67.0.3393.4/67.0.3393.4_chrome_installer.exe
+http://dl.google.com/release2/chrome/AK9Wp3fza_7G_67.0.3393.4/67.0.3393.4_chrome_installer.exe
+https://dl.google.com/release2/chrome/AK9Wp3fza_7G_67.0.3393.4/67.0.3393.4_chrome_installer.exe
+http://www.google.com/dl/release2/chrome/AK9Wp3fza_7G_67.0.3393.4/67.0.3393.4_chrome_installer.exe
+https://www.google.com/dl/release2/chrome/AK9Wp3fza_7G_67.0.3393.4/67.0.3393.4_chrome_installer.exe
+SHA1：B4E9DA2B37AA14DC8DE0DB31FC7E3748453C7CB1，SHA256：615D2C910FA4DE6668F73C53EBE1B397640D8CB91D1C441705EC10F575169E70
 
 ## Dev 开发版 64位
-最新版本：67.0.3381.1，文件大小：47.230MB，查询时间：2018-03-28 07:43
+最新版本：67.0.3393.4，文件大小：47.474MB，查询时间：2018-04-12 02:43
 
 下载地址：
 
-http://redirector.gvt1.com/edgedl/release2/chrome/AOHXvnCKvM76_67.0.3381.1/67.0.3381.1_chrome_installer.exe
-https://redirector.gvt1.com/edgedl/release2/chrome/AOHXvnCKvM76_67.0.3381.1/67.0.3381.1_chrome_installer.exe
-http://dl.google.com/release2/chrome/AOHXvnCKvM76_67.0.3381.1/67.0.3381.1_chrome_installer.exe
-https://dl.google.com/release2/chrome/AOHXvnCKvM76_67.0.3381.1/67.0.3381.1_chrome_installer.exe
-http://www.google.com/dl/release2/chrome/AOHXvnCKvM76_67.0.3381.1/67.0.3381.1_chrome_installer.exe
-https://www.google.com/dl/release2/chrome/AOHXvnCKvM76_67.0.3381.1/67.0.3381.1_chrome_installer.exe
-SHA1：7EB6C1FB5B78E6D09E93B551C1F288F6E8F83133，SHA256：572BD45FED22080CAFD07FEF25E2E770092A2848DFFC6E7237046AF1F1576C09
+http://redirector.gvt1.com/edgedl/release2/chrome/Ue8zBK8d8VM_67.0.3393.4/67.0.3393.4_chrome_installer.exe
+https://redirector.gvt1.com/edgedl/release2/chrome/Ue8zBK8d8VM_67.0.3393.4/67.0.3393.4_chrome_installer.exe
+http://dl.google.com/release2/chrome/Ue8zBK8d8VM_67.0.3393.4/67.0.3393.4_chrome_installer.exe
+https://dl.google.com/release2/chrome/Ue8zBK8d8VM_67.0.3393.4/67.0.3393.4_chrome_installer.exe
+http://www.google.com/dl/release2/chrome/Ue8zBK8d8VM_67.0.3393.4/67.0.3393.4_chrome_installer.exe
+https://www.google.com/dl/release2/chrome/Ue8zBK8d8VM_67.0.3393.4/67.0.3393.4_chrome_installer.exe
+SHA1：37384F117B6AC20B518855BA16C3E725DC489A9B，SHA256：D4B1F7F86A57B708F2B6D74838303832EFE4600A8180A9AB5D4ACC3E736E0130
 
 ## Canary 金丝雀 32位
-最新版本：67.0.3384.0，文件大小：46.925MB，查询时间：2018-03-30 15:08
+最新版本：67.0.3395.0，文件大小：47.152MB，查询时间：2018-04-12 14:58
 
 下载地址：
 
-http://redirector.gvt1.com/edgedl/release2/chrome/DzDsSCd5YZk_67.0.3384.0/67.0.3384.0_chrome_installer.exe
-https://redirector.gvt1.com/edgedl/release2/chrome/DzDsSCd5YZk_67.0.3384.0/67.0.3384.0_chrome_installer.exe
-http://dl.google.com/release2/chrome/DzDsSCd5YZk_67.0.3384.0/67.0.3384.0_chrome_installer.exe
-https://dl.google.com/release2/chrome/DzDsSCd5YZk_67.0.3384.0/67.0.3384.0_chrome_installer.exe
-http://www.google.com/dl/release2/chrome/DzDsSCd5YZk_67.0.3384.0/67.0.3384.0_chrome_installer.exe
-https://www.google.com/dl/release2/chrome/DzDsSCd5YZk_67.0.3384.0/67.0.3384.0_chrome_installer.exe
-SHA1：092CFE2224108524BAE28F18EDB379EC9ED8076D，SHA256：F19A0C41577EE44F5128FB34E622254C90C93508112F0103012C78FF16DC06E5
+http://redirector.gvt1.com/edgedl/release2/chrome/AN3zonV8d-MB_67.0.3395.0/67.0.3395.0_chrome_installer.exe
+https://redirector.gvt1.com/edgedl/release2/chrome/AN3zonV8d-MB_67.0.3395.0/67.0.3395.0_chrome_installer.exe
+http://dl.google.com/release2/chrome/AN3zonV8d-MB_67.0.3395.0/67.0.3395.0_chrome_installer.exe
+https://dl.google.com/release2/chrome/AN3zonV8d-MB_67.0.3395.0/67.0.3395.0_chrome_installer.exe
+http://www.google.com/dl/release2/chrome/AN3zonV8d-MB_67.0.3395.0/67.0.3395.0_chrome_installer.exe
+https://www.google.com/dl/release2/chrome/AN3zonV8d-MB_67.0.3395.0/67.0.3395.0_chrome_installer.exe
+SHA1：1A1524FA1641BAD92A02769F3D0BCED1C67141F4，SHA256：234FCEF9CDDD33A57DF2A62D03DD1E03AED7805749EABD6ECCF36CD7C9814884
 
 ## Canary 金丝雀 64位
-最新版本：67.0.3384.0，文件大小：47.317MB，查询时间：2018-03-30 14:33
+最新版本：67.0.3395.0，文件大小：47.558MB，查询时间：2018-04-12 17:43
 
 下载地址：
 
-http://redirector.gvt1.com/edgedl/release2/chrome/XdtbN870MTU_67.0.3384.0/67.0.3384.0_chrome_installer.exe
-https://redirector.gvt1.com/edgedl/release2/chrome/XdtbN870MTU_67.0.3384.0/67.0.3384.0_chrome_installer.exe
-http://dl.google.com/release2/chrome/XdtbN870MTU_67.0.3384.0/67.0.3384.0_chrome_installer.exe
-https://dl.google.com/release2/chrome/XdtbN870MTU_67.0.3384.0/67.0.3384.0_chrome_installer.exe
-http://www.google.com/dl/release2/chrome/XdtbN870MTU_67.0.3384.0/67.0.3384.0_chrome_installer.exe
-https://www.google.com/dl/release2/chrome/XdtbN870MTU_67.0.3384.0/67.0.3384.0_chrome_installer.exe
-SHA1：8E29879A38623FAA06DD29C597A6F31F53833590，SHA256：16ECAF6249DF5F449DE55EE93957FE849A19719BDCAB774D0EA9C0F146A11081
+http://redirector.gvt1.com/edgedl/release2/chrome/Jrcd__2CDXQ_67.0.3395.0/67.0.3395.0_chrome_installer.exe
+https://redirector.gvt1.com/edgedl/release2/chrome/Jrcd__2CDXQ_67.0.3395.0/67.0.3395.0_chrome_installer.exe
+http://dl.google.com/release2/chrome/Jrcd__2CDXQ_67.0.3395.0/67.0.3395.0_chrome_installer.exe
+https://dl.google.com/release2/chrome/Jrcd__2CDXQ_67.0.3395.0/67.0.3395.0_chrome_installer.exe
+http://www.google.com/dl/release2/chrome/Jrcd__2CDXQ_67.0.3395.0/67.0.3395.0_chrome_installer.exe
+https://www.google.com/dl/release2/chrome/Jrcd__2CDXQ_67.0.3395.0/67.0.3395.0_chrome_installer.exe
+SHA1：D2A1457AE046232C2019CD0FA179CFB6B1A31AF6，SHA256：D961B318EF48053BE251AC83B6BB3F8A9662F84A500B28A76B566DB0566493F8
