@@ -2,7 +2,7 @@
 title: "Linode 上搭建 Shadowsocks"
 comments: true
 date: 2018-04-13 09:08:00
-udpated: 2018-04-13 09:08:00
+udpated: 2018-04-14 10:08:00
 categories:
  - Technology
  - Shadowsocks
@@ -92,15 +92,17 @@ net.ipv4.tcp_congestion_control = bbr
 
 ## 搭建 Shadowsocks
 
-### 安装 Shadowsocks
+### Shadowsocks-python
+
+#### 安装 Shadowsocks-python
 ```sh
 $ apt-get update
 $ apt-get install python3-pip
 $ pip install shadowsocks
 ```
 
-### 配置 Shadowsocks
-修改 /etc/shadowsocks/config.json 文件，填入以下内容：
+#### 配置 Shadowsocks
+修改 /etc/shadowsocks-python/config.json 文件，填入以下内容：
 ```
 {
     "server":"xxx.xxx.xxx.xxx",
@@ -115,10 +117,32 @@ $ pip install shadowsocks
 }
 ```
 
-### 开启服务
+#### 开启服务
 ```sh
 # 启动服务
-$ ssserver -c /etc/shadowsocks/config.json -d start
+$ ssserver -c /etc/shadowsocks-python/config.json -d start
 # 关闭服务
-$ ssserver -c /etc/shadowsocks/config.json -d stop
+$ ssserver -c /etc/shadowsocks-python/config.json -d stop
+```
+
+### Shadowsocks-go
+
+#### 安装 Shadowsocks-go
+```sh
+$ apt-get install golang
+```
+编辑 `~/.bashrc`，加入以下内容:
+```sh
+export GOPATH=/usr/gopath
+export PATH=$PATH:$GOPATH/bin
+```
+执行 `source ~/.bashrc`使设置生效。然后再执行以下命令安装 Shadowsocks-go：
+```sh
+go get github.com/shadowsocks/shadowsocks-go/cmd/shadowsocks-server
+```
+
+#### 启动服务
+```sh
+# 后台启动
+$ shadowsocks-server -c /etc/shadowsocks-go/config.json > /usr/gopath/log/log &
 ```
