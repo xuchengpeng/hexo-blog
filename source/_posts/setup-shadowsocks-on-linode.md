@@ -2,7 +2,7 @@
 title: "Linode 上搭建 Shadowsocks"
 comments: true
 date: 2018-04-13 09:08:00
-udpated: 2018-04-14 10:08:00
+udpated: 2018-04-15 08:24:00
 categories:
  - Technology
  - Shadowsocks
@@ -99,6 +99,10 @@ net.ipv4.tcp_congestion_control = bbr
 $ apt-get update
 $ apt-get install python3-pip
 $ pip install shadowsocks
+```
+或者是通过源码安装最新版 Shadowsocks-python
+```sh
+$ pip install git+https://github.com/shadowsocks/shadowsocks.git@master
 ```
 
 #### 配置 Shadowsocks
