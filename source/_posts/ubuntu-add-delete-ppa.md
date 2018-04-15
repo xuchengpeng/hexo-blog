@@ -2,7 +2,7 @@
 title: "Ubuntu 增加和删除 PPA 软件源"
 comments: true
 date: 2018-04-13 10:50:50
-udpated: 2018-04-13 10:50:50
+udpated: 2018-04-15 21:22:50
 categories:
  - Technology
  - Linux
@@ -31,6 +31,8 @@ PPA 的一般形式是： **ppa:user/ppa-name**
 Ubuntu 下安装 emacs25：
 ```sh
 $ sudo add-apt-repository ppa:kelleyk/emacs
+# 或者是 sudo add-apt-repository ppa:ubuntu-elisp/ppa
 $ sudo apt-get update
 $ sudo apt-get install emacs25
+# 或者是 sudo apt-get install emacs-snapshot
 ```
