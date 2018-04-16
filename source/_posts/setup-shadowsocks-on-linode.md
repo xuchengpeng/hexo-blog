@@ -2,7 +2,7 @@
 title: "Linode 上搭建 Shadowsocks"
 comments: true
 date: 2018-04-13 09:08:00
-udpated: 2018-04-16 14:31:00
+udpated: 2018-04-16 16:22:00
 categories:
  - Technology
  - Shadowsocks
@@ -151,6 +151,32 @@ $ pip install git+https://github.com/shadowsocks/shadowsocks.git@master
 $ ssserver -c /etc/shadowsocks-python/config.json -d start
 # 关闭服务
 $ ssserver -c /etc/shadowsocks-python/config.json -d stop
+```
+
+### Shadowsocks-libev
+
+#### 安装 mbedtls
+```sh
+$ wget https://tls.mbed.org/download/mbedtls-2.8.0-gpl.tgz
+$ tar xvf mbedtls-2.8.0-gpl.tgz
+$ pushd mbedtls-2.8.0
+$ make SHARED=1 CFLAGS=-fPIC
+$ sudo make DESTDIR=/usr install
+$ popd
+$ sudo ldconfig
+```
+
+#### 安装 Shadowsocks-libev
+Ubuntu 14.04 and 16.04:
+```sh
+$ sudo add-apt-repository ppa:max-c-lv/shadowsocks-libev -y
+$ sudo apt-get update
+$ sudo apt-get install shadowsocks-libev
+```
+Ubuntu 16.10 or higher:
+```sh
+$ sudo apt-get update
+$ sudo apt-get install shadowsocks-libev
 ```
 
 ### Shadowsocks-go
