@@ -2,7 +2,7 @@
 title: "Linode 上搭建 Shadowsocks"
 comments: true
 date: 2018-04-13 09:08:00
-udpated: 2018-04-16 16:22:00
+udpated: 2018-04-16 17:51:00
 categories:
  - Technology
  - Shadowsocks
@@ -177,6 +177,18 @@ Ubuntu 16.10 or higher:
 ```sh
 $ sudo apt-get update
 $ sudo apt-get install shadowsocks-libev
+```
+
+#### 开启服务
+```sh
+# 启动
+$ /etc/init.d/shadowsocks-libev start
+# 停止
+$ /etc/init.d/shadowsocks-libev stop
+# 重启
+$ /etc/init.d/shadowsocks-libev restart
+# 查看状态
+$ /etc/init.d/shadowsocks-libev status
 ```
 
 ### Shadowsocks-go
