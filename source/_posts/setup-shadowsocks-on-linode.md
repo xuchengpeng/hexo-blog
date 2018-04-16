@@ -2,7 +2,7 @@
 title: "Linode 上搭建 Shadowsocks"
 comments: true
 date: 2018-04-13 09:08:00
-udpated: 2018-04-15 08:24:00
+udpated: 2018-04-16 14:31:00
 categories:
  - Technology
  - Shadowsocks
@@ -18,7 +18,7 @@ tags:
 
 老大哥Linode近年最大的变化是，倍感digitalocean和vultr的压力了。Linode近期最大的福利是，全面由原来的Xen架构改用最流行的KVM架构服务器，套餐内存全部翻倍！
 
-例如，过去每月$10只能买1G内存套餐，现在你可购买Linode 2G套餐，这也是最低套餐配置了，绝对具有性价比。
+例如，过去每月$10只能买1G内存套餐，现在你可购买Linode 2G套餐，目前最低$5可以买1G内存套餐，这也是最低套餐配置了，绝对具有性价比。
 
 Linode也允许用户按月付费，仍然采用信用卡付款的方式。新增了Paypal付款方式，目前处于测试阶段。需要提醒中国用户，Paypal仍然会要求你绑定一张双币信用卡（支持国内发行的visa信用卡），所以你应当尽快申请一张属于自己的信用卡。
 
@@ -92,6 +92,16 @@ net.ipv4.tcp_congestion_control = bbr
 
 ## 搭建 Shadowsocks
 
+### libsodium 安装
+```sh
+wget -N --no-check-certificate https://github.com/jedisct1/libsodium/releases/download/1.0.16/libsodium-1.0.16.tar.gz
+tar zxvf libsodium-1.0.16.tar.gz
+cd libsodium-1.0.16
+./configure
+make && make check
+make install
+```
+
 ### Shadowsocks-python
 
 #### 安装 Shadowsocks-python
@@ -115,9 +125,22 @@ $ pip install git+https://github.com/shadowsocks/shadowsocks.git@master
     "local_port":1080,
     "password":"xxxxxxxx",
     "timeout":300,
-    "method":"aes-256-cfb",
+    "method":"aes-256-gcm",
     "fast_open": false,
-    "workers": 1
+}
+```
+多用户配置：
+```
+{
+    "server": "xxx.xxx.xxx.xxx",
+    "port_password": {
+        "8381": "xxxxxxxx",
+        "8382": "xxxxxxxx",
+        "8383": "xxxxxxxx",
+        "8384": "xxxxxxxx"
+    },
+    "timeout": 300,
+    "method": "aes-256-gcm"
 }
 ```
 
