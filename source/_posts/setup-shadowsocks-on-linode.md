@@ -127,7 +127,7 @@ $ pip install git+https://github.com/shadowsocks/shadowsocks.git@master
     "password":"xxxxxxxx",
     "timeout":300,
     "method":"aes-256-gcm",
-    "fast_open": false,
+    "fast_open": false
 }
 ```
 多用户配置：
@@ -166,7 +166,7 @@ export PATH=$PATH:$GOPATH/bin
 ```
 执行 `source ~/.bashrc`使设置生效。然后再执行以下命令安装 Shadowsocks-go：
 ```sh
-go get github.com/shadowsocks/shadowsocks-go/cmd/shadowsocks-server
+$ go get github.com/shadowsocks/shadowsocks-go/cmd/shadowsocks-server
 ```
 
 #### 启动服务
