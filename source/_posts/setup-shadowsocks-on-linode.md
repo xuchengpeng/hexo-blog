@@ -94,12 +94,13 @@ net.ipv4.tcp_congestion_control = bbr
 
 ### libsodium 安装
 ```sh
-wget -N --no-check-certificate https://github.com/jedisct1/libsodium/releases/download/1.0.16/libsodium-1.0.16.tar.gz
-tar zxvf libsodium-1.0.16.tar.gz
-cd libsodium-1.0.16
-./configure
-make && make check
-make install
+$ wget -N --no-check-certificate https://github.com/jedisct1/libsodium/releases/download/1.0.16/libsodium-1.0.16.tar.gz
+$ tar zxvf libsodium-1.0.16.tar.gz
+$ cd libsodium-1.0.16
+$ ./configure
+$ make && make check
+$ make install
+$ ldconfig
 ```
 
 ### Shadowsocks-python
