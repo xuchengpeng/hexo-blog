@@ -2,7 +2,7 @@
 title: "Linode 上搭建 Shadowsocks"
 comments: true
 date: 2018-04-13 09:08:00
-udpated: 2018-04-16 17:51:00
+udpated: 2018-04-17 14:07:00
 categories:
  - Technology
  - Shadowsocks
@@ -89,6 +89,7 @@ $ sysctl net.ipv4.tcp_congestion_control
 net.ipv4.tcp_congestion_control = bbr
 ```
 
+> Linux 4.13内核版本及以上，不再需要配置 `net.core.default_qdisc=fq`。
 
 ## 搭建 Shadowsocks
 
