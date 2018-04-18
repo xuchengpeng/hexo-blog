@@ -176,7 +176,6 @@ theme_config:
     archives: /archives/ || archive
     categories: /categories/ || th
     tags: /tags/ || tags
-    项目: /project/ || tasks
     留言: /guestbook/ || commenting
     about: /about/ || user
   
@@ -205,11 +204,10 @@ theme_config:
   links:
     Chuck's Emacs Configuration: http://xuchengpeng.com/emacs.d/
     HarmonyHu: http://harmonyhu.com/
-    FreeSS: https://freess.cx/
+    linode: https://www.linode.com/
     shadowsocks: https://github.com/shadowsocks
     LeanCloud: https://leancloud.cn/
     Travis CI: https://travis-ci.org/
-    Cloudflare: https://www.cloudflare.com/
     NexT: https://github.com/theme-next/hexo-theme-next
   
   # Sidebar Avatar
