@@ -156,6 +156,9 @@ $ pip install shadowsocks
 ```
 或者是通过源码安装最新版 Shadowsocks-python
 ```sh
+$ apt-get update
+$ apt-get install python-pip
+$ apt-get install git
 $ pip install git+https://github.com/shadowsocks/shadowsocks.git@master
 ```
 
