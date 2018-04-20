@@ -2,7 +2,7 @@
 title: "Linode 上搭建 Shadowsocks"
 comments: true
 date: 2018-04-13 09:08:00
-udpated: 2018-04-19 18:26:00
+udpated: 2018-04-20 13:18:00
 categories:
  - Technology
  - Shadowsocks
@@ -136,12 +136,13 @@ net.ipv4.tcp_congestion_control = bbr
 
 ### libsodium 安装
 ```sh
+$ apt-get install build-essential
 $ wget -N --no-check-certificate https://github.com/jedisct1/libsodium/releases/download/1.0.16/libsodium-1.0.16.tar.gz
 $ tar zxvf libsodium-1.0.16.tar.gz
-$ cd libsodium-1.0.16
-$ ./configure
-$ make && make check
+$ pushd libsodium-1.0.16
+$ ./configure --prefix=/usr && make
 $ make install
+$ popd
 $ ldconfig
 ```
 
@@ -150,7 +151,7 @@ $ ldconfig
 #### 安装 Shadowsocks-python
 ```sh
 $ apt-get update
-$ apt-get install python3-pip
+$ apt-get install python-pip
 $ pip install shadowsocks
 ```
 或者是通过源码安装最新版 Shadowsocks-python
