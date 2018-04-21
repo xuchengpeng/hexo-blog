@@ -2,13 +2,13 @@
 title: "Ubuntu 升级内核"
 comments: true
 date: 2018-04-20 15:34:34
-udpated: 2018-04-20 15:34:34
+udpated: 2018-04-21 14:49:34
 categories:
  - Technology
  - Linux
 tags:
  - Ubuntu
- - linode
+ - Linode
 ---
 
 ### 查看当前内核版本
@@ -49,5 +49,5 @@ $ reboot
 ```
 <!-- more -->
 
-### linode
-在 linode 提供的服务器上面，需要将 Boot Setting 下 Kernel 设定为 **GRUB 2**。
+### Linode
+在 Linode 提供的服务器上面，需要将 Boot Setting 下 Kernel 设定为 **GRUB 2**。
