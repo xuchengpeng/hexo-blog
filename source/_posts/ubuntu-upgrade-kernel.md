@@ -2,7 +2,7 @@
 title: "Ubuntu 升级内核"
 comments: true
 date: 2018-04-20 15:34:34
-udpated: 2018-04-21 14:49:34
+udpated: 2018-04-21 15:53:34
 categories:
  - Technology
  - Linux
@@ -19,8 +19,9 @@ $ uname -r
 
 ### 下载内核
 下载最新 Ubuntu 编译好的内核地址： http://kernel.ubuntu.com/~kernel-ppa/mainline/
-选取当前最新的内核 4.6.13 版本进行下载：
+选取当前最新的内核 4.16.3 版本进行下载：
 ```sh
+$ mkdir 4.16.3 & cd 4.16.3
 $ wget http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.16.3/linux-headers-4.16.3-041603_4.16.3-041603.201804190730_all.deb
 $ wget http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.16.3/linux-headers-4.16.3-041603-generic_4.16.3-041603.201804190730_amd64.deb
 $ wget http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.16.3/linux-image-4.16.3-041603-generic_4.16.3-041603.201804190730_amd64.deb
