@@ -2,7 +2,7 @@
 title: "搭建Hexo NexT主题博客"
 comments: true
 date: 2018-01-09 14:41:31
-udpated: 2018-01-30 07:58:31
+udpated: 2018-04-21 08:52:31
 categories:
  - Technology
  - Hexo
@@ -360,9 +360,11 @@ $content-desktop = 800px
 // 当视窗超过 1600px 后的宽度
 $content-desktop-large = 1000px
 ```
-{% note warning %}
-注：这种方法不适用于Pisces和Gemini。
-{% endnote %}
+Pisces 和 Gemini 的修改方法为:
+```
+$main-desktop    = 85%
+$content-desktop = calc(100% - 260px)
+```
 
 #### 标签设置
 
