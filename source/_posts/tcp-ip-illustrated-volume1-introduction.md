@@ -19,17 +19,17 @@ TCP/IP 通常被认为是一个四层协议系统：
 3. 运输层：主要为两台主机上的应用程序提供端到端的通信。**TCP协议** 和 **UDP协议**。
 4. 应用层：负责处理特定的应用程序细节。
 
-![](/images/tcp-ip-layers.jpg)
+![](/images/tcp-ip/tcp-ip-layers.jpg)
 <!-- more -->
 
 ## 封装
 
 当应用程序用 TCP 传送数据时，数据被送入协议栈中，然后逐个通过每一层直到被当作一串比特流送入网络。其中每一层对收到的数据都要增加一些首部信息（有时还要增加尾部信息）。
 
-![](/images/tcp-ip-multiplexing.jpg)
+![](/images/tcp-ip/tcp-ip-multiplexing.jpg)
 
 ## 分用
 
 当目的主机收到一个以太网数据帧时，数据就开始从协议栈中由底向上升，同时去掉各层协议加上的报文首部。每层协议盒都要去检查报文首部中的协议标识，以确定接收数据的上层协议。
 
-![](/images/tcp-ip-demultiplexing.jpg)
+![](/images/tcp-ip/tcp-ip-demultiplexing.jpg)
