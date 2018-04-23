@@ -32,7 +32,7 @@ tags:
 
 我们有一个作为桥接实现的 DrawAPI 接口和实现了 DrawAPI 接口的实体类 RedCircle、GreenCircle。Shape 是一个抽象类，将使用 DrawAPI 的对象。BridgePatternDemo，我们的演示类使用 Shape 类来画出不同颜色的圆。
 
-![](/images/bridge_pattern_uml_diagram.jpg)
+![](/images/design-pattern/bridge_pattern_uml_diagram.jpg)
 
 ### 步骤 1
 创建桥接实现接口。

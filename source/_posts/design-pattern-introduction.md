@@ -48,7 +48,7 @@ categories:
 
 下面用一个图片来整体描述一下设计模式之间的关系：
 
-![](/images/the-relationship-between-design-patterns.jpg)
+![](/images/design-pattern/the-relationship-between-design-patterns.jpg)
 
 ## 设计模式的六大原则
 

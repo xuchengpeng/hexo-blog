@@ -32,7 +32,7 @@ tags:
 
 我们有一个类 Employee，该类被当作组合模型类。CompositePatternDemo，我们的演示类使用 Employee 类来添加部门层次结构，并打印所有员工。
 
-![](/images/composite_pattern_uml_diagram.jpg)
+![](/images/design-pattern/composite_pattern_uml_diagram.jpg)
 
 ### 步骤 1
 创建 Employee 类，该类带有 Employee 对象的列表。

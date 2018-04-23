@@ -37,7 +37,7 @@ tags:
 我们将创建一个 SingleObject 类。SingleObject 类有它的私有构造函数和本身的一个静态实例。
 SingleObject 类提供了一个静态方法，供外界获取它的静态实例。SingletonPatternDemo，我们的演示类使用 SingleObject 类来获取 SingleObject 对象。
 
-![](/images/singleton_pattern_uml_diagram.jpg)
+![](/images/design-pattern/singleton_pattern_uml_diagram.jpg)
 
 ### 步骤 1
 创建一个 Singleton 类。

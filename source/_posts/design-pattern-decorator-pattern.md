@@ -34,7 +34,7 @@ tags:
 RedShapeDecorator 是实现了 ShapeDecorator 的实体类。
 DecoratorPatternDemo，我们的演示类使用 RedShapeDecorator 来装饰 Shape 对象。
 
-![](/images/decorator_pattern_uml_diagram.jpg)
+![](/images/design-pattern/decorator_pattern_uml_diagram.jpg)
 
 ### 步骤 1
 创建一个接口。
