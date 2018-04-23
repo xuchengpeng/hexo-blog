@@ -7,7 +7,6 @@ categories:
  - Study
  - Design Pattern
 tags:
- - Design Pattern
  - 创建型模式
 ---
 
