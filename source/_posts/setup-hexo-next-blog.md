@@ -2,7 +2,7 @@
 title: "搭建Hexo NexT主题博客"
 comments: true
 date: 2018-01-09 14:41:31
-udpated: 2018-04-21 08:52:31
+udpated: 2018-04-24 16:58:31
 categories:
  - Technology
  - Hexo
@@ -743,3 +743,19 @@ note danger
 ```
 
 {% button https://www.baidu.com, 点击下载百度, download fa-lg fa-fw %}
+
+### 文字字体和颜色
+
+```markdown
+<font color=red size=6 face=“黑体”>字体颜色</font>
+```
+
+<font color=red size=6 face=“黑体”>字体颜色</font>
+
+### 文字背景色
+
+```markdown
+<table><tr><td bgcolor=cyan>背景颜色</td></tr></table>
+```
+
+<table><tr><td bgcolor=cyan>背景颜色</td></tr></table>
