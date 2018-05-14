@@ -104,7 +104,7 @@ The equivalent version with with-eval-after-load would be:
   (setq bar 17))
 ```
 
-Define a marco `after-load` which is compatible with both `with-eval-after-load` and `eval-after-load`.
+Define a macro `after-load` which is compatible with both `with-eval-after-load` and `eval-after-load`.
 ```el
 (if (fboundp 'with-eval-after-load)
     (defalias 'after-load 'with-eval-after-load)
