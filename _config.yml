@@ -153,7 +153,7 @@ theme_config:
     # Default path: source/css/_mixins/custom.styl
     #mixins: source/_data/mixins.styl
     # Default path: source/css/_custom/custom.styl
-    styles: source/_data/styles.styl
+    #styles: source/_data/styles.styl
   
   # For example, you put your favicons into `hexo-site/source/images` directory.
   # Then need to rename & redefine they on any other names, otherwise icons from Next will rewrite your custom icons in Hexo.
@@ -225,9 +225,17 @@ theme_config:
     NexT: https://github.com/theme-next/hexo-theme-next
   
   # Sidebar Avatar
-  # in theme directory(source/images): /images/avatar.gif
-  # in site  directory(source/uploads): /uploads/avatar.gif
-  avatar: /images/bio-photo.jpg
+  avatar:
+    # in theme directory(source/images): /images/avatar.gif
+    # in site  directory(source/uploads): /uploads/avatar.gif
+    # You can also use other linking images.
+    url: /images/bio-photo.jpg
+    # If true, the avatar would be dispalyed in circle. 
+    rounded: true
+    # The value of opacity should be choose from 0 to 1 to set the opacity of the avatar.
+    opacity: 1
+    # If true, the avatar would be rotated with the cursor.
+    rotated: true
   
   # Table Of Contents in the Sidebar
   toc:
