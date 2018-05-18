@@ -53,6 +53,13 @@ tags:
       nil
     t))
 
+;; or
+;; (defun dotemacs-font-existsp (font)
+;;   "Detect if a font exists"
+;;   (if (find-font (font-spec :family font))
+;;         t
+;;       nil))
+
 (defun dotemacs-make-font-string (font-name font-size)
   (if (and (stringp font-size)
            (equal ":" (string (elt font-size 0))))
