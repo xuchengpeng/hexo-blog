@@ -1,7 +1,7 @@
 ---
 title:  "Google Chrome下载地址"
 date: 2017-11-21 10:21:00
-updated: 2018-04-15 21:24:00
+updated: 2018-05-23 11:06:00
 comments: true
 categories: 
   - Software
@@ -79,17 +79,17 @@ https://www.google.com/dl/release2/chrome/AK9Wp3fza_7G_67.0.3393.4/67.0.3393.4_c
 SHA1：B4E9DA2B37AA14DC8DE0DB31FC7E3748453C7CB1，SHA256：615D2C910FA4DE6668F73C53EBE1B397640D8CB91D1C441705EC10F575169E70
 
 ## Dev 开发版 64位
-最新版本：67.0.3393.4，文件大小：47.474MB，查询时间：2018-04-12 02:43
+最新版本：68.0.3432.3，文件大小：48.015MB，查询时间：2018-05-18 04:23
 
 下载地址：
 
-http://redirector.gvt1.com/edgedl/release2/chrome/Ue8zBK8d8VM_67.0.3393.4/67.0.3393.4_chrome_installer.exe
-https://redirector.gvt1.com/edgedl/release2/chrome/Ue8zBK8d8VM_67.0.3393.4/67.0.3393.4_chrome_installer.exe
-http://dl.google.com/release2/chrome/Ue8zBK8d8VM_67.0.3393.4/67.0.3393.4_chrome_installer.exe
-https://dl.google.com/release2/chrome/Ue8zBK8d8VM_67.0.3393.4/67.0.3393.4_chrome_installer.exe
-http://www.google.com/dl/release2/chrome/Ue8zBK8d8VM_67.0.3393.4/67.0.3393.4_chrome_installer.exe
-https://www.google.com/dl/release2/chrome/Ue8zBK8d8VM_67.0.3393.4/67.0.3393.4_chrome_installer.exe
-SHA1：37384F117B6AC20B518855BA16C3E725DC489A9B，SHA256：D4B1F7F86A57B708F2B6D74838303832EFE4600A8180A9AB5D4ACC3E736E0130
+http://redirector.gvt1.com/edgedl/release2/chrome/ALl5YmmPWKnp_68.0.3432.3/68.0.3432.3_chrome_installer.exe
+https://redirector.gvt1.com/edgedl/release2/chrome/ALl5YmmPWKnp_68.0.3432.3/68.0.3432.3_chrome_installer.exe
+http://dl.google.com/release2/chrome/ALl5YmmPWKnp_68.0.3432.3/68.0.3432.3_chrome_installer.exe
+https://dl.google.com/release2/chrome/ALl5YmmPWKnp_68.0.3432.3/68.0.3432.3_chrome_installer.exe
+http://www.google.com/dl/release2/chrome/ALl5YmmPWKnp_68.0.3432.3/68.0.3432.3_chrome_installer.exe
+https://www.google.com/dl/release2/chrome/ALl5YmmPWKnp_68.0.3432.3/68.0.3432.3_chrome_installer.exe
+SHA1：9BA1C426A5B159514FCD98B9A065C6D3FE5CE86A，SHA256：CB56749C00122ECB1E7F33105D31AAA14C8C2F34FABE09959998ECF74929AA81
 
 ## Canary 金丝雀 32位
 最新版本：68.0.3397.0，文件大小：47.202MB，查询时间：2018-04-14 14:48
