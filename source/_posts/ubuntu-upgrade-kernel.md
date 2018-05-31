@@ -2,7 +2,7 @@
 title: "Ubuntu 升级内核"
 comments: true
 date: 2018-04-20 15:34:34
-udpated: 2018-04-21 15:53:34
+udpated: 2018-05-31 16:54:34
 categories:
  - Technology
  - Linux
@@ -35,12 +35,14 @@ $ dpkg -i *.deb
 ### 卸载旧内核
 ```sh
 # 查看目前安装的内核
-$ dpkg -l | grep linux-image
+$ dpkg -l | grep linux
 ii  linux-image-4.4.0-53-generic       4.4.0-53.74                        amd64        Linux kernel image for version 4.4.0 on 64 bit x86 SMP
 ii  linux-image-4.16.3-041603-generic  4.16.3-041603.201804190730         amd64        Linux kernel image for version 4.16.3 on 64 bit x86 SMP
 ## 卸载旧内核
-$ apt-get remove linux-image-4.4.0-53-generic
+$ apt-get purge linux-image-4.4.0-53-generic linux-headers-4.4.0-53
 ```
+
+如果查询的结果中还有显示已卸载的内核，可以使用`dpkg -P linux-image-4.4.0-53-generic`命令将其删除。
 
 ### 更新启动引导
 ```sh
