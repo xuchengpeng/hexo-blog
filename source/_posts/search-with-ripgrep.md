@@ -1,7 +1,7 @@
 ---
 title: "Search with ripgrep"
 date: 2018-03-17 17:48:44
-udpated: 2018-04-02 16:56:44
+udpated: 2018-06-01 17:46:44
 comments: true
 categories:
 - Software
@@ -63,12 +63,12 @@ And finally, a straight-up comparison between ripgrep and GNU grep on a single l
   :ensure t
   :after (helm)
   :config
-  (setq helm-ag-base-command "rg --ignore-case --line-number --no-heading --vimgrep")
+  (setq helm-ag-base-command "rg --color=always --smart-case --no-heading --line-number")
   )
 ```
 
 ## helm-do-grep-ag
 
 ```el
-(setq helm-grep-ag-command "rg --color=always --smart-case --no-heading --line-number --vimgrep %s %s %s")
+(setq helm-grep-ag-command "rg --color=always --smart-case --no-heading --line-number %s %s %s")
 ```
