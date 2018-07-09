@@ -8,7 +8,6 @@ categories:
  - emacs
 tags:
  - emacs
- - line_numbers
 ---
 
 emacs has 2 line numbers mode:
