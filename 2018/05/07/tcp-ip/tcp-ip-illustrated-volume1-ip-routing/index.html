@@ -1,0 +1,319 @@
+<!DOCTYPE html><html class="theme-next gemini use-motion" lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=2"><meta name="theme-color" content="#222"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@latest/needsharebutton.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><link href="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/themes/blue/pace-theme-flash.css" rel="stylesheet"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.2.5/dist/jquery.fancybox.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"><link href="/hexo-blog/css/main.css?v=6.3.0" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/hexo-blog/images/apple-touch-icon.png?v=6.3.0"><link rel="icon" type="image/png" sizes="32x32" href="/hexo-blog/images/favicon-32x32.ico?v=6.3.0"><link rel="icon" type="image/png" sizes="16x16" href="/hexo-blog/images/favicon-16x16.ico?v=6.3.0"><link rel="mask-icon" href="/hexo-blog/images/favicon-logo.svg?v=6.3.0" color="#222"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/hexo-blog/",scheme:"Gemini",version:"6.3.0",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!0,onmobile:!1},fancybox:!0,fastclick:!1,lazyload:!1,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><meta name="description" content="选路是IP最重要的功能之一。需要进行选路的数据报可以由本地主机产生，也可以由其他主机产生。在后一种情况下，主机必须配置成一个路由器，否则通过网络接口接收到的数据报，如果目的地址不是本机就要被丢弃（例如，悄无声息地被丢弃）。"><meta name="keywords" content="IP选路"><meta property="og:type" content="article"><meta property="og:title" content="TCP&#x2F;IP 详解(卷一) IP选路"><meta property="og:url" content="http://xuchengpeng.com/hexo-blog/2018/05/07/tcp-ip/tcp-ip-illustrated-volume1-ip-routing/index.html"><meta property="og:site_name" content="xuchengpeng"><meta property="og:description" content="选路是IP最重要的功能之一。需要进行选路的数据报可以由本地主机产生，也可以由其他主机产生。在后一种情况下，主机必须配置成一个路由器，否则通过网络接口接收到的数据报，如果目的地址不是本机就要被丢弃（例如，悄无声息地被丢弃）。"><meta property="og:locale" content="zh-CN"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/ip-layer-process.jpg"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/icmp-redirect-example.jpg"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/icmp-redirect-format.jpg"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/icmp-router-solicitation-format.jpg"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/icmp-router-advertisement-format.jpg"><meta property="og:updated_time" content="2019-01-06T06:24:55.974Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="TCP&#x2F;IP 详解(卷一) IP选路"><meta name="twitter:description" content="选路是IP最重要的功能之一。需要进行选路的数据报可以由本地主机产生，也可以由其他主机产生。在后一种情况下，主机必须配置成一个路由器，否则通过网络接口接收到的数据报，如果目的地址不是本机就要被丢弃（例如，悄无声息地被丢弃）。"><meta name="twitter:image" content="http://xuchengpeng.com/images/tcp-ip/ip-layer-process.jpg"><link rel="alternate" href="/hexo-blog/atom.xml" title="xuchengpeng" type="application/atom+xml"><link rel="canonical" href="http://xuchengpeng.com/hexo-blog/2018/05/07/tcp-ip/tcp-ip-illustrated-volume1-ip-routing/"><script type="text/javascript" id="page.configurations">CONFIG.page={sidebar:""}</script><title>TCP/IP 详解(卷一) IP选路 | xuchengpeng</title><noscript><style type="text/css">.sidebar-inner,.use-motion .brand,.use-motion .collection-title,.use-motion .comments,.use-motion .menu-item,.use-motion .motion-element,.use-motion .pagination,.use-motion .post-block,.use-motion .post-body,.use-motion .post-header{opacity:initial}.use-motion .logo,.use-motion .site-subtitle,.use-motion .site-title{opacity:initial;top:initial}.logo-line-after i{right:initial}</style></noscript></head><body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/hexo-blog/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">xuchengpeng</span><span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle">Valar Morghulis. Valar Dohaeris.</p></div><div class="site-nav-toggle"> <button aria-label="切换导航栏"><span class="btn-bar"></span><span class="btn-bar"></span><span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/hexo-blog/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>首页</a></li><li class="menu-item menu-item-archives"><a href="/hexo-blog/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>归档</a></li><li class="menu-item menu-item-categories"><a href="/hexo-blog/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i><br>分类</a></li><li class="menu-item menu-item-tags"><a href="/hexo-blog/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i><br>标签</a></li><li class="menu-item menu-item-留言"><a href="/hexo-blog/guestbook/" rel="section"><i class="menu-item-icon fa fa-fw fa-commenting"></i><br>留言</a></li><li class="menu-item menu-item-about"><a href="/hexo-blog/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i><br>关于</a></li><li class="menu-item menu-item-search"><a href="javascript:;" class="popup-trigger"><i class="menu-item-icon fa fa-search fa-fw"></i><br>搜索</a></li></ul><div class="site-search"><div class="popup search-popup local-search-popup"><div class="local-search-header clearfix"><span class="search-icon"><i class="fa fa-search"></i></span><span class="popup-btn-close"><i class="fa fa-times-circle"></i></span><div class="local-search-input-wrapper"> <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input"></div></div><div id="local-search-result"></div></div></div></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://xuchengpeng.com/hexo-blog/hexo-blog/2018/05/07/tcp-ip/tcp-ip-illustrated-volume1-ip-routing/"><span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person"><meta itemprop="name" content="xuchengpeng"><meta itemprop="description" content="Valar Morghulis. Valar Dohaeris."><meta itemprop="image" content="/hexo-blog/images/bio-photo.jpg"></span><span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization"><meta itemprop="name" content="xuchengpeng"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">TCP/IP 详解(卷一) IP选路</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i></span> <span class="post-meta-item-text">发表于</span> <time title="创建时间：2018-05-07 10:29:57" itemprop="dateCreated datePublished" datetime="2018-05-07T10:29:57+08:00">2018-05-07</time></span> <span class="post-category"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-folder-o"></i></span> <span class="post-meta-item-text">分类于</span> <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/hexo-blog/categories/Study/" itemprop="url" rel="index"><span itemprop="name">Study</span></a></span> ， <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/hexo-blog/categories/Study/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span></span> <span class="post-comments-count"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-comment-o"></i></span> <a href="/hexo-blog/2018/05/07/tcp-ip/tcp-ip-illustrated-volume1-ip-routing/#comments" itemprop="discussionUrl"><span class="post-meta-item-text">评论数：</span><span class="post-comments-count valine-comment-count" data-xid="/hexo-blog/2018/05/07/tcp-ip/tcp-ip-illustrated-volume1-ip-routing/" itemprop="commentCount"></span></a></span> <span id="/hexo-blog/2018/05/07/tcp-ip/tcp-ip-illustrated-volume1-ip-routing/" class="leancloud_visitors" data-flag-title="TCP/IP 详解(卷一) IP选路"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-eye"></i></span> <span class="post-meta-item-text">阅读次数：</span><span class="leancloud-visitors-count"></span></span><div class="post-symbolscount"><span class="post-meta-item-icon"><i class="fa fa-file-word-o"></i></span> <span class="post-meta-item-text">本文字数：</span> <span title="本文字数">9.9k</span> <span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-clock-o"></i></span> <span class="post-meta-item-text">阅读时长 &asymp;</span> <span title="阅读时长">18 分钟</span></div></div></header><div class="post-body" itemprop="articleBody"><p>选路是IP最重要的功能之一。需要进行选路的数据报可以由本地主机产生，也可以由其他主机产生。在后一种情况下，主机必须配置成一个路由器，否则通过网络接口接收到的数据报，如果目的地址不是本机就要被丢弃（例如，悄无声息地被丢弃）。</p><p><img src="/images/tcp-ip/ip-layer-process.jpg" alt=""><br><a id="more"></a></p><h2 id="选路的原理"><a href="#选路的原理" class="headerlink" title="选路的原理"></a>选路的原理</h2><p>IP搜素路由表的步骤：</p><ol><li>搜索匹配的主机地址；</li><li>搜索匹配的网络地址；</li><li>搜索默认表项（默认表项一般在路由表中被指定为一个网络表项，其网络号为0）。</li></ol><p>匹配主机地址步骤始终发生在匹配网络地址步骤之前。</p><p>IP层进行的选路实际上是一种选路机制，它搜索路由表并决定向哪个网络接口发送分组。这区别于选路策略，它只是一组决定把哪些路由放入路由表的规则。IP执行选路机制，而路由守护程序则一般提供选路策略。</p><h3 id="简单路由表"><a href="#简单路由表" class="headerlink" title="简单路由表"></a>简单路由表</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">svr4 % netstat -rn</span><br><span class="line">Routing tables</span><br><span class="line">Destination    Gateway        Flags  Refcnt  Use    Interface</span><br><span class="line">140.252.13.65  140.252.13.35  UGH    0       0      emd0</span><br><span class="line">127.0.0.1      127.0.0.1      UH     1       0      lo0</span><br><span class="line">default        140.252.13.33  UG     0       0      emd0</span><br><span class="line">140.252.13.32  140.252.13.34  U      4       25043  emd0</span><br></pre></td></tr></table></figure><p>第1行说明，如果目的地是140.252.13.65（slip主机），那么网关（路由器）将把分组转发给140.252.13.35（bsdi）。这正是我们所期望的，因为主机slip通过SLIP链路与bsdi相连接，而bsdi与该主机在同一个以太网上。</p><p>对于一个给定的路由器，可以打印出五种不同的标志（flag）：<br><strong>U</strong> 该路由可以使用。<br><strong>G</strong> 该路由是到一个网关（路由器）。如果没有设置该标志，说明目的地是直接相连的。<br><strong>H</strong> 该路由是到一个主机，也就是说，目的地址是一个完整的主机地址。如果没有设置该标志，说明该路由是到一个网络，而目的地址是一个网络地址：一个网络号，或者网络号与子网号的组合。<br><strong>D</strong> 该路由是由重定向报文创建的。<br><strong>M</strong> 该路由已被重定向报文修改。</p><p>标志G是非常重要的，因为由它区分了间接路由和直接路由（对于直接路由来说是不设置标志G的）。其区别在于，发往直接路由的分组中不但具有指明目的端的IP地址，还具有其链路层地址。当分组被发往一个间接路由时，IP地址指明的是最终的目的地，但是链路层地址指明的是网关（即下一站路由器）。在这个路由表例子中，有一个间接路由（设置了标志G），因此采用这一项路由的分组其IP地址是最终的目的地（140.252.13.65），但是其链路层地址必须对应于路由器140.252.13.35。</p><p>理解G和H标志之间的区别是很重要的。G标志区分了直接路由和间接路由，如上所述。但是H标志表明，目的地址（netstat命令输出第一行）是一个完整的主机地址。没有设置H标志说明目的地址是一个网络地址（主机号部分为0）。当为某个目的IP地址搜索路由表时，主机地址项必须与目的地址完全匹配，而网络地址项只需要匹配目的地址的网络号和子网号就可以了。另外，大多数版本的netstat命令首先打印出所有的主机路由表项，然后才是网络路由表项。</p><p>参考记数Refcnt（Reference count）列给出的是正在使用路由的活动进程个数。面向连接的协议如TCP在建立连接时要固定路由。如果在主机svr4和slip之间建立Telnet连接，可以看到参考记数值变为1。建立另一个Telnet连接时，它的值将增加为2，依此类推。</p><p>下一列（“use”）显示的是通过该路由发送的分组数。如果我们是这个路由的唯一用户，那么运行ping程序发送5个分组后，它的值将变为5。最后一列（interface）是本地接口的名字。</p><p>输出的第2行是环回接口，它的名字始终为lo0。没有设置G标志，因为该路由不是一个网关。H标志说明目的地址（127.0.0.1）是一个主机地址，而不是一个网络地址。由于没有设置G标志，说明这是一个直接路由，网关列给出的是外出IP地址。</p><p>输出的第3行是默认路由。每个主机都有一个或多个默认路由。这一项表明，如果在表中没有找到特定的路由，就把分组发送到路由器140.252.13.33（sun主机）。这说明当前主机（svr4）利用这一个路由表项就可以通过Internet经路由器sun（及其SLIP链路）访问其他的系统。建立默认路由是一个功能很强的概念。该路由标志（UG）表明它是一个网关，这是我们所期望的。</p><blockquote><p>这里，我们有意称sun为路由器而不是主机，因为它被当作默认路由器来使用，它发挥的是IP转发功能，而不是主机功能。</p></blockquote><p>输出中的最后一行是所在的以太网。H标志没有设置，说明目的地址（140.252.13.32）是一个网络地址，其主机地址部分设为0。事实上，是它的低5位设为0。由于这是一个直接路由（G标志没有被设置），网关列指出的IP地址是外出地址。</p><p>netstat命令输出的最后一项还隐含了另一个信息，那就是目的地址（140.252.13.32）的子网掩码。如果要把该目的地址与140.252.13.33进行比较，那么在比较之前首先要把它与目的地址掩码(0xffffe0)进行逻辑与。由于内核知道每个路由表项对应的接口，而且每个接口都有一个对应的子网掩码，因此每个路由表项都有一个隐含的子网掩码。</p><p>主机路由表的复杂性取决于主机所在网络的拓扑结构。</p><ol><li>最简单的（也是最不令人感兴趣的）情况是主机根本没有与任何网络相连。TCP/IP协议仍然能用于这样的主机，但是只能与自己本身通信！这种情况下的路由表只包含环回接口一项。</li><li>接下来的情况是主机连在一个局域网上，只能访问局域网上的主机。这时路由表包含两项：一项是环回接口，另一项是局域网（如以太网）。</li><li>如果主机能够通过单个路由器访问其他网络（如Internet）时，那么就要进行下一步。一般情况下增加一个默认表项指向该路由器。</li><li>如果要新增其他的特定主机或网络路由，那么就要进行最后一步。在我们的例子中，到主机slip的路由要通过路由器bsdi就是这样的例子。</li></ol><p>我们根据上述IP操作的步骤使用这个路由表为主机svr4上的一些分组例子选择路由。</p><ol><li>假定目的地址是主机sun，140.252.13.33。首先进行主机地址的匹配。路由表中的两个主机地址表项（slip和localhost）均不匹配，接着进行网络地址匹配。这一次匹配成功，找到表项140.252.13.32（网络号和子网号都相同），因此使用emd0接口。这是一个直接路由，因此链路层地址将是目的端的地址。</li><li>假定目的地址是主机slip，140.252.13.65。首先在路由表搜索主机地址，并找到一个匹配地址。这是一个间接路由，因此目的端的IP地址仍然是140.252.13.65，但是链路层地址必须是网关140.252.13.35的链路层地址，其接口名为emd0。</li><li>这一次我们通过Internet给主机aw.com（192.207.11 7.2）发送一份数据报。首先在路由表中搜索主机地址，失败后进行网络地址匹配。最后成功地找到默认表项。该路由是一个间接路由，通过网关140.252.13.33，并使用接口名为emd0。</li><li>在我们最后一个例子中，我们给本机发送一份数据报。有四种方法可以完成这件事，如用主机名、主机IP地址、环回名或者环回IP地址：<br>ftp svr4<br>ftp 140.252.13.34<br>ftp localhost<br>ftp 127.0.0.1<br>在前两种情况下，对路由表的第2次搜索得到一个匹配的网络地址140.252.13.32，并把IP报文传送给以太网驱动程序。IP报文中的目的地址为本机IP地址，因此报文被送给环回驱动程序，然后由驱动程序把报文放入IP输出队列中。<br>在后两种情况下，由于指定了环回接口的名字或IP地址，第一次搜索就找到匹配的主机地址，因此报文直接被送给环回驱动程序，然后由驱动程序把报文放入IP输出队列中。<br>上述四种情况报文都要被送给环回驱动程序，但是采用的两种路由决策是不相同的。</li></ol><h3 id="初始化路由表"><a href="#初始化路由表" class="headerlink" title="初始化路由表"></a>初始化路由表</h3><p>我们从来没有说过这些路由表是如何被创建的。每当初始化一个接口时（通常是用ifconfig命令设置接口地址），就为接口自动创建一个直接路由。对于点对点链路和环回接口来说，路由是到达主机（例如，设置H标志）。对于广播接口来说，如以太网，路由是到达网络。</p><p>到达主机或网络的路由如果不是直接相连的，那么就必须加入路由表。一个常用的方法是在系统引导时显式地在初始化文件中运行route命令。在主机svr4上，我们运行下面两个命令来添加路由表中的表项：<br>route add default sun 1<br>route add slip bsdi 1<br>第3个参数（default和slip）代表目的端，第4个参数代表网关（路由器），最后一个参数代表路由的度量(metric)。route命令在度量值大于0时要为该路由设置G标志，否则，当耗费值为0时就不设置G标志。</p><blockquote><p>不幸的是，几乎没有系统愿意在启动文件中包含route命令。在4.4BSD和BSD/386系统中，启动文件是/etc/netstart；在SVR4系统中，启动文件是/etc/inet/rc.inet；在Solaris 2.x中，启动文件是/etc/rc2.d/S69inet；在SunOS 4.1.x中，启动文件是/etc/rc.local；而AIX 3.2.2则使用文件/etc/rc.net。</p></blockquote><p>一些系统允许在某个文件中指定默认的路由器，如/etc/defaultrouter。于是在每次重新启动系统时都要在路由表中加入该默认项。<br>初始化路由表的其他方法是运行路由守护程序或者用较新的路由器发现协议。</p><h3 id="较复杂的路由表"><a href="#较复杂的路由表" class="headerlink" title="较复杂的路由表"></a>较复杂的路由表</h3><p>在我们的子网上，主机sun是所有主机的默认路由器，因为它有拨号SLIP链路连接到Internet上。<br></p><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sun % netstat -rn</span><br><span class="line">Routing tables</span><br><span class="line">Destination    Gateway        Flags  Refcnt  Use    Interface</span><br><span class="line">140.252.13.65  140.252.13.35  UGH    0       171    le0</span><br><span class="line">127.0.0.1      127.0.0.1      UH     1       766    lo0</span><br><span class="line">140.252.1.183  140.252.1.29   UH     0       0      sl0</span><br><span class="line">default        140.252.1.183  UG     1       2955   sl0</span><br><span class="line">140.252.13.32  140.252.13.33  U      8       99551  le0</span><br></pre></td></tr></table></figure><p></p><p>前两项与主机svr4的前两项一致：通过路由器bsdi到达slip的特定主机路由，以及环回路由。</p><p>第3行是新加的。这是一个直接到达主机的路由(没有设置G标志，但设置了H标志)，对应于点对点的链路，即SLIP接口。如果我们把它与ifconfig命令的输出进行比较：<br></p><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sun % ifconfig sl0</span><br><span class="line">sl0: flags=1051&lt;UP,POINTOPOINT,RUNNING&gt;</span><br><span class="line">     inet 140.252.1.29 --&gt; 140.252.1.183 netmask ffffff00</span><br></pre></td></tr></table></figure><p></p><p>可以发现路由表中的目的地址就是点对点链路的另一端(即路由器netb),网关地址为外出接口的本地IP地址(140.252.1.29)(前面已经说过,netstat为直接路由打印出来的网关地址就是本地接口所用的IP地址)。</p><p>默认的路由表项是一个到达网络的间接路由(设置了G标志，但没有设置H标志)，这正是我们所希望的。网关地址是路由器的地址(140.252.1.183，SLIP链路的另一端),而不是SLIP链路的本地IP地址(140.252.1.29)。其原因还是因为是间接路由，不是直接路由。</p><p>还应该指出的是，netstat输出的第3和第4行(接口名为sl0)由SLIP软件在启动时创建，并在关闭时删除。</p><h3 id="没有到达目的地的路由"><a href="#没有到达目的地的路由" class="headerlink" title="没有到达目的地的路由"></a>没有到达目的地的路由</h3><p>我们所有的例子都假定对路由表的搜索能找到匹配的表项，即使匹配的是默认项。如果路由表中没有默认项，而又没有找到匹配项，这时会发生什么情况呢？</p><p>结果取决于该IP数据报是由主机产生的还是被转发的（例如，我们就充当一个路由器）。如果数据报是由本地主机产生的，那么就给发送该数据报的应用程序返回一个差错，或者是“主机不可达差错”或者是“网络不可达差错”。如果是被转发的数据报，那么就给原始发送端发送一份ICMP主机不可达的差错报文。</p><h2 id="ICMP-主机与网络不可达差错"><a href="#ICMP-主机与网络不可达差错" class="headerlink" title="ICMP 主机与网络不可达差错"></a>ICMP 主机与网络不可达差错</h2><p>当路由器收到一份IP数据报但又不能转发时，就要发送一份ICMP“主机不可达”差错报文。可以很容易发现，在我们的网络上把接在路由器sun上的拨号SLIP链路断开，然后试图通过该SLIP链路发送分组给任何指定sun为默认路由器的主机。</p><p>我们在上一节通过在路由器sun上运行netstat命令可以看到，当接通SLIP链路启动时就要在路由表中增加一项使用SLIP链路的表项，而当断开SLIP链路时则删除该表项。这说明当SLIP链路断开时，sun的路由表中就没有默认项了。但是我们不想改变网络上其他主机的路由表，即同时删除它们的默认路由。相反，对于sun不能转发的分组，我们对它产生的ICMP主机不可达差错报文进行计数。</p><p>在主机svr4上运行ping程序就可以看到这一点，它在拨号SLIP链路的另一端（拨号链路已被断开）：<br></p><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">svr4 % ping gemini</span><br><span class="line">ICMP Host Unreachable from gateway sun (140.252.13.33)</span><br><span class="line">ICMP Host Unreachable from gateway sun (140.252.13.33)</span><br><span class="line">^? <span class="built_in">type</span> interrupt key to stop</span><br></pre></td></tr></table></figure><p></p><p>在主机bsdi上运行tcpdump命令的输出:<br></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1  0.0         svr4 &gt; gemini: icmp: echo request</span><br><span class="line">2  0.00 (0.00) sun &gt; svr4: icmp: host gemini unreachable</span><br><span class="line">3  0.99 (0.99) svr4 &gt; gemini: icmp: echo request</span><br><span class="line">4  0.99 (0.00) sun &gt; svr4: icmp: host gemini unreachable</span><br></pre></td></tr></table></figure><p></p><p>当路由器sun发现找不到能到达主机gemini的路由时，它就响应一个主机不可达的回显请求报文。</p><p>如果把SLIP链路接到Internet上，然后试图ping一个与Internet没有连接的IP地址，那么应该会产生差错。但令人感兴趣的是，我们可以看到在返回差错报文之前，分组要在Internet上传送多远：<br></p><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sun % ping 192.82.148.1</span><br><span class="line">PING 192.82.148.1: 56 data bytes</span><br><span class="line">ICMP Host Unreachable from gateway enss142.UT.westnet.net (192.31.39.21)</span><br><span class="line"> <span class="keyword">for</span> icmp from sun (140.252.1.29) to 192.82.148.1</span><br></pre></td></tr></table></figure><p></p><p>在发现该IP地址是无效的之前，该分组已通过了6个路由器。只有当它到达NSFNET骨干网的边界时才检测到差错。这说明，6个路由器之所以能转发分组是因为路由表中有默认项。只有当分组到达NSFNET骨干网时，路由器才能知道每个连接到Internet上的每个网络的信息。这说明许多路由器只能在局部范围内工作。</p><p>参考文献[Ford, Rekhter, and Braun 1993]定义了顶层选路域（top-level routing domain），由它来维护大多数Internet网站的路由信息，而不使用默认路由。他们指出，在Internet上存在5个这样的顶层选路域：NSFNET主干网、商业互联网交换（Commercial Internet Exchange: CIX）、NASA科学互联网（NASA Science Internet: NSI）、SprintLink以及欧洲IP主干网（EBONE）。</p><h2 id="转发或不转发"><a href="#转发或不转发" class="headerlink" title="转发或不转发"></a>转发或不转发</h2><p>一般都假定主机不转发IP数据报，除非对它们进行特殊配置而作为路由器使用。如何进行这样的配置呢？</p><p>大多数伯克利派生出来的系统都有一个内核变量ipforwarding，或其他类似的名字（参见附录E）。一些系统（如BSD/386和SVR4）只有在该变量值不为0的情况下才转发数据报。SunOS 4.1.x允许该变量可以有三个不同的值：-1表示始终不转发并且始终不改变它的值；0表示默认条件下不转发，但是当打开两个或更多个接口时就把该值设为1；1表示始终转发。Solaris 2.x把这三个值改为0（始终不转发）、1（始终转发）和2（在打开两个或更多个接口时才转发）。</p><p>较早版本的4.2BSD主机在默认条件下可以转发数据报，这给没有进行正确配置的系统带来了许多问题。这就是内核选项为什么要设成默认的“始终不转发”的原因，除非系统管理员进行特殊设置。</p><h2 id="ICMP-重定向差错"><a href="#ICMP-重定向差错" class="headerlink" title="ICMP 重定向差错"></a>ICMP 重定向差错</h2><p><img src="/images/tcp-ip/icmp-redirect-example.jpg" alt=""></p><p>当IP数据报应该被发送到另一个路由器时，收到数据报的路由器就要发送ICMP重定向差错报文给IP数据报的发送端。这在概念上是很简单的，正如图所示的那样。只有当主机可以选择路由器发送分组的情况下，我们才可能看到ICMP重定向报文。</p><ol><li>我们假定主机发送一份IP数据报给R1。这种选路决策经常发生，因为R1是该主机的默认路由。</li><li>R1收到数据报并且检查它的路由表，发现R2是发送该数据报的下一站。当它把数据报发送给R2时，R1检测到它正在发送的接口与数据报到达接口是相同的（即主机和两个路由器所在的LAN）。这样就给路由器发送重定向报文给原始发送端提供了线索。</li><li>R1发送一份ICMP重定向报文给主机，告诉它以后把数据报发送给R2而不是R1。</li></ol><p>重定向一般用来让具有很少选路信息的主机逐渐建立更完善的路由表。主机启动时路由表中可以只有一个默认表项（在图所示的例子中，为R1或R2）。一旦默认路由发生差错，默认路由器将通知它进行重定向，并允许主机对路由表作相应的改动。ICMP重定向允许TCP/IP主机在进行选路时不需要具备智能特性，而把所有的智能特性放在路由器端。显然，在我们的例子中，R1和R2必须知道有关相连网络的更多拓扑结构的信息，但是连在LAN上的所有主机在启动时只需一个默认路由，通过接收重定向报文来逐步学习。</p><p>ICMP重定向报文的格式:<br><img src="/images/tcp-ip/icmp-redirect-format.jpg" alt=""></p><p>有四种不同类型的重定向报文，有不同的代码值:</p><table><thead><tr><th style="text-align:left">代码</th><th style="text-align:left">描述</th></tr></thead><tbody><tr><td style="text-align:left">0</td><td style="text-align:left">网络重定向</td></tr><tr><td style="text-align:left">1</td><td style="text-align:left">主机重定向</td></tr><tr><td style="text-align:left">2</td><td style="text-align:left">服务类型和网络重定向</td></tr><tr><td style="text-align:left">3</td><td style="text-align:left">服务类型和主机重定向</td></tr></tbody></table><p>ICMP重定向报文的接收者必须查看三个IP地址：(1)导致重定向的IP地址（即ICMP重定向报文的数据网络重定向主机重定向位于IP数据报的首部）；(2)发送重定向报文的路由器的IP地址（包含重定向信息的IP数据报中的源地址；(3)应该采用的路由器IP地址（在ICMP报文中的4~7字节）。</p><p>关于ICMP重定向报文有很多规则。首先，重定向报文只能由路由器生成，而不能由主机生成。另外，重定向报文是为主机而不是为路由器使用的。假定路由器和其他一些路由器共同参与某一种选路协议，则该协议就能消除重定向的需要（这意味着路由表应该消除或者能被选路守护程序修改，或者能被重定向报文修改，但不能同时被二者修改）。</p><p>在4.4BSD系统中，当主机作为路由器使用时，要进行下列检查。在生成ICMP重定向报文之前这些条件都要满足。</p><ol><li>出接口必须等于入接口。</li><li>用于向外传送数据报的路由不能被ICMP重定向报文创建或修改过，而且不能是路由器的默认路由。</li><li>数据报不能用源站选路来转发。</li><li>内核必须配置成可以发送重定向报文。</li></ol><p>另外，一台4.4BSD主机收到ICMP重定向报文后，在修改路由表之前要作一些检查。这是为了防止路由器或主机的误操作，以及恶意用户的破坏，导致错误地修改系统路由表。</p><ol><li>新的路由器必须直接与网络相连接。</li><li>重定向报文必须来自当前到目的地所选择的路由器。</li><li>重定向报文不能让主机本身作为路由器。</li><li>被修改的路由必须是一个间接路由。</li></ol><p>关于重定向最后要指出的是，路由器应该发送的只是对主机的重定向(代码1或3)，而不是对网络的重定向。子网的存在使得难于准确指明何时应发送对网络的重定向而不是对主机的重定向。只当路由器发送了错误的类型时，一些主机才把收到的对网络的重定向当作对主机的重定向来处理。</p><h2 id="ICMP-路由器发现报文"><a href="#ICMP-路由器发现报文" class="headerlink" title="ICMP 路由器发现报文"></a>ICMP 路由器发现报文</h2><p>前面已提到过一种初始化路由表的方法，即在配置文件中指定静态路由。这种方法经常用来设置默认路由。另一种新的方法是利用ICMP路由器通告和请求报文。</p><p>一般认为，主机在引导以后要广播或多播传送一份路由器请求报文。一台或更多台路由器响应一份路由器通告报文。另外，路由器定期地广播或多播传送它们的路由器通告报文，允许每个正在监听的主机相应地更新它们的路由表。</p><p>ICMP 路由器请求报文格式：<br><img src="/images/tcp-ip/icmp-router-solicitation-format.jpg" alt=""></p><p>ICMP 路由器通告报文格式：<br><img src="/images/tcp-ip/icmp-router-advertisement-format.jpg" alt=""></p><p>接下来是一对或多对IP地址和优先级。IP地址必须是发送路由器的某个地址。优先级是一个有符号的32 bit整数，指出该IP地址作为默认路由器地址的优先等级，这是与子网上的其他路由器相比较而言的。值越大说明优先级越高。优先级为0x80000000说明对应的地址不能作为默认路由器地址使用，尽管它也包含中通告报文中。优先级的默认值一般为0。</p><h3 id="路由器操作"><a href="#路由器操作" class="headerlink" title="路由器操作"></a>路由器操作</h3><p>当路由器启动时，它定期在所有广播或多播传送接口上发送通告报文。准确地说，这些通告报文不是定期发送的，而是随机传送的，以减小与子网上其他路由器发生冲突的概率。一般每两次通告间隔450秒和600秒。一份给定的通告报文默认生命周期是30分钟。</p><p>使用生命周期域的另一个时机是当路由器上的某个接口被关闭时。在这种情况下，路由器可以在该接口上发送最后一份通告报文，并把生命周期值设为0。</p><p>除了定期发送主动提供的通告报文以外，路由器还要监听来自主机的请求报文，并发送路由器通告报文以响应这些请求报文。</p><p>如果子网上有多台路由器，由系统管理员为每个路由器设置优先等级。例如，主默认路由器就要比备份路由器具有更高的优先级。</p><h3 id="主机操作"><a href="#主机操作" class="headerlink" title="主机操作"></a>主机操作</h3><p>主机在引导期间一般发送三份路由器请求报文，每三秒钟发送一次。一旦接收到一个有效的通告报文，就停止发送请求报文。</p><p>主机也监听来自相邻路由器的通告报文。这些通告报文可以改变主机的默认路由器。另外，如果没有接收到来自当前默认路由器的通告报文，那么默认路由器会超时。</p><p>只要有一般的默认路由器，该路由器就会每隔10分钟发送通告报文，报文的生命周期是30分钟。这说明主机的默认表项是不会超时的，即使错过一份或两份通告报文。</p><h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>路由器发现报文一般由用户进程（守护程序）创建和处理。守护程序必须把它配置成一台路由器或主机来使用。</p><h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>IP路由操作对于运行TCP/IP的系统来说是最基本的，不管是主机还是路由器。路由表项的内容很简单，包括：5bit标志、目的IP地址（主机、网络或默认）、下一站路由器的IP地址（间接路由）或者本地接口的IP地址（直接路由）及指向本地接口的指针。主机表项比网络表项具有更高的优先级，而网络表项比默认项具有更高的优先级。</p><p>系统产生的或转发的每份IP数据报都要搜索路由表，它可以被路由守护程序或ICMP重定向报文修改。系统在默认情况下不转发数据报，除非进行特殊的配置。用route命令可以进入静态路由，可以利用新ICMP路由器发现报文来初始化默认表项，并进行动态修改。主机在启动时只有一个简单的路由表，它可以被来自默认路由器的ICMP重定向报文动态修改。</p></div><div><div style="padding:10px 0;margin:20px auto;width:90%;text-align:center"><div></div> <button id="rewardButton" disable="enable" onclick='var qr=document.getElementById("QR");"none"===qr.style.display?qr.style.display="block":qr.style.display="none"'> <span>打赏</span></button><div id="QR" style="display:none"><div id="wechat" style="display:inline-block"> <img id="wechat_qr" src="/hexo-blog/images/wechatpay.jpg" alt="xuchengpeng 微信支付"><p>微信支付</p></div><div id="alipay" style="display:inline-block"> <img id="alipay_qr" src="/hexo-blog/images/alipay.jpg" alt="xuchengpeng 支付宝"><p>支付宝</p></div></div></div></div><div><ul class="post-copyright"><li class="post-copyright-author"> <strong>本文作者：</strong> xuchengpeng</li><li class="post-copyright-link"> <strong>本文链接：</strong> <a href="http://xuchengpeng.com/hexo-blog/2018/05/07/tcp-ip/tcp-ip-illustrated-volume1-ip-routing/" title="TCP/IP 详解(卷一) IP选路">http://xuchengpeng.com/hexo-blog/2018/05/07/tcp-ip/tcp-ip-illustrated-volume1-ip-routing/</a></li><li class="post-copyright-license"> <strong>版权声明：</strong> 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li></ul></div><footer class="post-footer"><div class="post-tags"> <a href="/hexo-blog/tags/IP选路/" rel="tag"># IP选路</a></div><div class="post-widgets"><div id="needsharebutton-postbottom"><span class="btn"><i class="fa fa-share-alt" aria-hidden="true"></i></span></div></div><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/hexo-blog/2018/05/04/tcp-ip/tcp-ip-illustrated-volume1-traceroute/" rel="next" title="TCP/IP 详解(卷一) Traceroute程序"><i class="fa fa-chevron-left"></i> TCP/IP 详解(卷一) Traceroute程序</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"> <a href="/hexo-blog/2018/05/08/tcp-ip/tcp-ip-illustrated-volume1-dynamic-routing-protocols/" rel="prev" title="TCP/IP 详解(卷一) 动态选路协议">TCP/IP 详解(卷一) 动态选路协议<i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div><div class="comments" id="comments"></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span><span class="sidebar-toggle-line sidebar-toggle-line-middle"></span><span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap"> 文章目录</li><li class="sidebar-nav-overview" data-target="site-overview-wrap"> 站点概览</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person"> <img class="site-author-image" itemprop="image" src="/hexo-blog/images/bio-photo.jpg" alt="xuchengpeng"><p class="site-author-name" itemprop="name">xuchengpeng</p><p class="site-description motion-element" itemprop="description">Valar Morghulis. Valar Dohaeris.</p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"> <a href="/hexo-blog/archives/"><span class="site-state-item-count">111</span> <span class="site-state-item-name">日志</span></a></div><div class="site-state-item site-state-categories"> <a href="/hexo-blog/categories/index.html"><span class="site-state-item-count">19</span> <span class="site-state-item-name">分类</span></a></div><div class="site-state-item site-state-tags"> <a href="/hexo-blog/tags/index.html"><span class="site-state-item-count">86</span> <span class="site-state-item-name">标签</span></a></div></nav><div class="feed-link motion-element"><a href="/hexo-blog/atom.xml" rel="alternate"><i class="fa fa-rss"></i> RSS</a></div><div class="links-of-author motion-element"><span class="links-of-author-item"><a href="https://www.google.com/maps" target="_blank" title="Wuhan, China"><i class="fa fa-fw fa-map-marker"></i> Wuhan, China</a></span><span class="links-of-author-item"><a href="mailto:xucp@outlook.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i> E-Mail</a></span><span class="links-of-author-item"><a href="https://github.com/xuchengpeng" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i> GitHub</a></span><span class="links-of-author-item"><a href="https://bitbucket.org/xuchengpeng" target="_blank" title="Bitbucket"><i class="fa fa-fw fa-bitbucket"></i> Bitbucket</a></span></div><div class="cc-license motion-element" itemprop="license"> <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank"><img src="/hexo-blog/images/cc-by-nc-sa.svg" alt="Creative Commons"></a></div><div class="links-of-blogroll motion-element links-of-blogroll-inline"><div class="links-of-blogroll-title"><i class="fa fa-fw fa-link"></i> 友情链接</div><ul class="links-of-blogroll-list"><li class="links-of-blogroll-item"> <a href="https://github.com/xuchengpeng/emacs.d" title="Chuck's Emacs Configuration" target="_blank">Chuck's Emacs Configuration</a></li><li class="links-of-blogroll-item"> <a href="http://harmonyhu.com/" title="HarmonyHu" target="_blank">HarmonyHu</a></li><li class="links-of-blogroll-item"> <a href="https://www.linode.com/" title="linode" target="_blank">linode</a></li><li class="links-of-blogroll-item"> <a href="https://github.com/shadowsocks" title="shadowsocks" target="_blank">shadowsocks</a></li><li class="links-of-blogroll-item"> <a href="https://leancloud.cn/" title="LeanCloud" target="_blank">LeanCloud</a></li><li class="links-of-blogroll-item"> <a href="https://travis-ci.org/" title="Travis CI" target="_blank">Travis CI</a></li><li class="links-of-blogroll-item"> <a href="https://github.com/theme-next/hexo-theme-next" title="NexT" target="_blank">NexT</a></li></ul></div></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#选路的原理"><span class="nav-number">1.</span> <span class="nav-text">选路的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单路由表"><span class="nav-number">1.1.</span> <span class="nav-text">简单路由表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化路由表"><span class="nav-number">1.2.</span> <span class="nav-text">初始化路由表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#较复杂的路由表"><span class="nav-number">1.3.</span> <span class="nav-text">较复杂的路由表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#没有到达目的地的路由"><span class="nav-number">1.4.</span> <span class="nav-text">没有到达目的地的路由</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ICMP-主机与网络不可达差错"><span class="nav-number">2.</span> <span class="nav-text">ICMP 主机与网络不可达差错</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#转发或不转发"><span class="nav-number">3.</span> <span class="nav-text">转发或不转发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ICMP-重定向差错"><span class="nav-number">4.</span> <span class="nav-text">ICMP 重定向差错</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ICMP-路由器发现报文"><span class="nav-number">5.</span> <span class="nav-text">ICMP 路由器发现报文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#路由器操作"><span class="nav-number">5.1.</span> <span class="nav-text">路由器操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主机操作"><span class="nav-number">5.2.</span> <span class="nav-text">主机操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现"><span class="nav-number">5.3.</span> <span class="nav-text">实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">6.</span> <span class="nav-text">小结</span></a></li></ol></div></div></section></div></aside></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2019</span><span class="with-love" id="animate"><i class="fa fa-"></i></span> <span class="author" itemprop="copyrightHolder">xuchengpeng</span> <span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-area-chart"></i></span> <span class="post-meta-item-text">站点总字数：</span> <span title="站点总字数">338k</span> <span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-coffee"></i></span> <span class="post-meta-item-text">站点阅读时长 &asymp;</span> <span title="站点阅读时长">10:14</span></div><script type="text/javascript">!function(){var e=document.createElement("script");e.src="//tajs.qq.com/stats?sId=64245444";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}()</script></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i> <span id="scrollpercent"><span>0</span>%</span></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.1/velocity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.1/velocity.ui.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.2.5/dist/jquery.fancybox.js"></script><script type="text/javascript" src="/hexo-blog/js/src/utils.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/motion.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/affix.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/schemes/pisces.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/scrollspy.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/post-details.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/bootstrap.js?v=6.3.0"></script><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script type="text/javascript">var GUEST=["nick","mail","link"],guest="nick,mail,link";guest=guest.split(",").filter(function(e){return-1<GUEST.indexOf(e)}),new Valine({el:"#comments",verify:!1,notify:!1,appId:"8cGx0mI721mXnuSact0PLKmV-gzGzoHsz",appKey:"eQc0CtLv9s4VTdObz6ux8lVW",placeholder:"Leave your comments here...",avatar:"wavatar",guest_info:guest,pageSize:"10"})</script><script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/hexo-blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script><script>AV.initialize("8cGx0mI721mXnuSact0PLKmV-gzGzoHsz","eQc0CtLv9s4VTdObz6ux8lVW")</script><script>function showTime(e){var t=new AV.Query(e),c=[],u=$(".leancloud_visitors");u.each(function(){c.push($(this).attr("id").trim())}),t.containedIn("url",c),t.find().done(function(e){var t=".leancloud-visitors-count";if(0!==e.length){for(var n=0;n<e.length;n++){var o=e[n],i=o.get("url"),s=o.get("time"),r=document.getElementById(i);$(r).find(t).text(s)}for(n=0;n<c.length;n++){i=c[n],r=document.getElementById(i);var l=$(r).find(t);""==l.text()&&l.text(0)}}else u.find(t).text(0)}).fail(function(e,t){console.log("Error: "+t.code+" "+t.message)})}function addCount(i){var e=$(".leancloud_visitors"),s=e.attr("id").trim(),r=e.attr("data-flag-title").trim(),t=new AV.Query(i);t.equalTo("url",s),t.find({success:function(e){if(0<e.length){var t=e[0];t.fetchWhenSave(!0),t.increment("time"),t.save(null,{success:function(e){$(document.getElementById(s)).find(".leancloud-visitors-count").text(e.get("time"))},error:function(e,t){console.log("Failed to save Visitor num, with error message: "+t.message)}})}else{var n=new i,o=new AV.ACL;o.setPublicReadAccess(!0),o.setPublicWriteAccess(!0),n.setACL(o),n.set("title",r),n.set("url",s),n.set("time",1),n.save(null,{success:function(e){$(document.getElementById(s)).find(".leancloud-visitors-count").text(e.get("time"))},error:function(e,t){console.log("Failed to create")}})}},error:function(e){console.log("Error:"+e.code+" "+e.message)}})}$(function(){var e=AV.Object.extend("Counter");1==$(".leancloud_visitors").length?addCount(e):1<$(".post-title-link").length&&showTime(e)})</script><script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@latest/needsharebutton.min.js"></script><script>pbOptions={iconStyle:"box",boxForm:"horizontal",position:"bottomCenter",networks:"Weibo,Wechat,Douban,QQZone,Twitter,Facebook"},new needShareButton("#needsharebutton-postbottom",pbOptions)</script></body></html>

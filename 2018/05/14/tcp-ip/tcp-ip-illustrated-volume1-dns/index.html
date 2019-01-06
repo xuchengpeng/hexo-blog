@@ -1,0 +1,319 @@
+<!DOCTYPE html><html class="theme-next gemini use-motion" lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=2"><meta name="theme-color" content="#222"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@latest/needsharebutton.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><link href="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/themes/blue/pace-theme-flash.css" rel="stylesheet"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.2.5/dist/jquery.fancybox.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"><link href="/hexo-blog/css/main.css?v=6.3.0" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/hexo-blog/images/apple-touch-icon.png?v=6.3.0"><link rel="icon" type="image/png" sizes="32x32" href="/hexo-blog/images/favicon-32x32.ico?v=6.3.0"><link rel="icon" type="image/png" sizes="16x16" href="/hexo-blog/images/favicon-16x16.ico?v=6.3.0"><link rel="mask-icon" href="/hexo-blog/images/favicon-logo.svg?v=6.3.0" color="#222"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/hexo-blog/",scheme:"Gemini",version:"6.3.0",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!0,onmobile:!1},fancybox:!0,fastclick:!1,lazyload:!1,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><meta name="description" content="域名系统（DNS）是一种用于TCP/IP应用程序的分布式数据库，它提供主机名字和IP地址之间的转换及有关电子邮件的选路信息。这里提到的分布式是指在Internet上的单个站点不能拥有所有的信息。每个站点（如大学中的系、校园、公司或公司中的部门）保留它自己的信息数据库，并运行一个服务器程序供Internet上的其他系统（客户程序）查询。DNS提供了允许服务器和客户程序相互通信的协议。 从应用的角度上"><meta name="keywords" content="DNS"><meta property="og:type" content="article"><meta property="og:title" content="TCP&#x2F;IP 详解(卷一) DNS：域名系统"><meta property="og:url" content="http://xuchengpeng.com/hexo-blog/2018/05/14/tcp-ip/tcp-ip-illustrated-volume1-dns/index.html"><meta property="og:site_name" content="xuchengpeng"><meta property="og:description" content="域名系统（DNS）是一种用于TCP/IP应用程序的分布式数据库，它提供主机名字和IP地址之间的转换及有关电子邮件的选路信息。这里提到的分布式是指在Internet上的单个站点不能拥有所有的信息。每个站点（如大学中的系、校园、公司或公司中的部门）保留它自己的信息数据库，并运行一个服务器程序供Internet上的其他系统（客户程序）查询。DNS提供了允许服务器和客户程序相互通信的协议。 从应用的角度上"><meta property="og:locale" content="zh-CN"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/dns-format.jpg"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/question-portion-of-dns-query-format.jpg"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/dns-rr-format.jpg"><meta property="og:updated_time" content="2019-01-06T06:24:55.970Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="TCP&#x2F;IP 详解(卷一) DNS：域名系统"><meta name="twitter:description" content="域名系统（DNS）是一种用于TCP/IP应用程序的分布式数据库，它提供主机名字和IP地址之间的转换及有关电子邮件的选路信息。这里提到的分布式是指在Internet上的单个站点不能拥有所有的信息。每个站点（如大学中的系、校园、公司或公司中的部门）保留它自己的信息数据库，并运行一个服务器程序供Internet上的其他系统（客户程序）查询。DNS提供了允许服务器和客户程序相互通信的协议。 从应用的角度上"><meta name="twitter:image" content="http://xuchengpeng.com/images/tcp-ip/dns-format.jpg"><link rel="alternate" href="/hexo-blog/atom.xml" title="xuchengpeng" type="application/atom+xml"><link rel="canonical" href="http://xuchengpeng.com/hexo-blog/2018/05/14/tcp-ip/tcp-ip-illustrated-volume1-dns/"><script type="text/javascript" id="page.configurations">CONFIG.page={sidebar:""}</script><title>TCP/IP 详解(卷一) DNS：域名系统 | xuchengpeng</title><noscript><style type="text/css">.sidebar-inner,.use-motion .brand,.use-motion .collection-title,.use-motion .comments,.use-motion .menu-item,.use-motion .motion-element,.use-motion .pagination,.use-motion .post-block,.use-motion .post-body,.use-motion .post-header{opacity:initial}.use-motion .logo,.use-motion .site-subtitle,.use-motion .site-title{opacity:initial;top:initial}.logo-line-after i{right:initial}</style></noscript></head><body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/hexo-blog/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">xuchengpeng</span><span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle">Valar Morghulis. Valar Dohaeris.</p></div><div class="site-nav-toggle"> <button aria-label="切换导航栏"><span class="btn-bar"></span><span class="btn-bar"></span><span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/hexo-blog/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>首页</a></li><li class="menu-item menu-item-archives"><a href="/hexo-blog/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>归档</a></li><li class="menu-item menu-item-categories"><a href="/hexo-blog/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i><br>分类</a></li><li class="menu-item menu-item-tags"><a href="/hexo-blog/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i><br>标签</a></li><li class="menu-item menu-item-留言"><a href="/hexo-blog/guestbook/" rel="section"><i class="menu-item-icon fa fa-fw fa-commenting"></i><br>留言</a></li><li class="menu-item menu-item-about"><a href="/hexo-blog/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i><br>关于</a></li><li class="menu-item menu-item-search"><a href="javascript:;" class="popup-trigger"><i class="menu-item-icon fa fa-search fa-fw"></i><br>搜索</a></li></ul><div class="site-search"><div class="popup search-popup local-search-popup"><div class="local-search-header clearfix"><span class="search-icon"><i class="fa fa-search"></i></span><span class="popup-btn-close"><i class="fa fa-times-circle"></i></span><div class="local-search-input-wrapper"> <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input"></div></div><div id="local-search-result"></div></div></div></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://xuchengpeng.com/hexo-blog/hexo-blog/2018/05/14/tcp-ip/tcp-ip-illustrated-volume1-dns/"><span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person"><meta itemprop="name" content="xuchengpeng"><meta itemprop="description" content="Valar Morghulis. Valar Dohaeris."><meta itemprop="image" content="/hexo-blog/images/bio-photo.jpg"></span><span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization"><meta itemprop="name" content="xuchengpeng"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">TCP/IP 详解(卷一) DNS：域名系统</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i></span> <span class="post-meta-item-text">发表于</span> <time title="创建时间：2018-05-14 09:31:56" itemprop="dateCreated datePublished" datetime="2018-05-14T09:31:56+08:00">2018-05-14</time></span> <span class="post-category"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-folder-o"></i></span> <span class="post-meta-item-text">分类于</span> <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/hexo-blog/categories/Study/" itemprop="url" rel="index"><span itemprop="name">Study</span></a></span> ， <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/hexo-blog/categories/Study/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span></span> <span class="post-comments-count"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-comment-o"></i></span> <a href="/hexo-blog/2018/05/14/tcp-ip/tcp-ip-illustrated-volume1-dns/#comments" itemprop="discussionUrl"><span class="post-meta-item-text">评论数：</span><span class="post-comments-count valine-comment-count" data-xid="/hexo-blog/2018/05/14/tcp-ip/tcp-ip-illustrated-volume1-dns/" itemprop="commentCount"></span></a></span> <span id="/hexo-blog/2018/05/14/tcp-ip/tcp-ip-illustrated-volume1-dns/" class="leancloud_visitors" data-flag-title="TCP/IP 详解(卷一) DNS：域名系统"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-eye"></i></span> <span class="post-meta-item-text">阅读次数：</span><span class="leancloud-visitors-count"></span></span><div class="post-symbolscount"><span class="post-meta-item-icon"><i class="fa fa-file-word-o"></i></span> <span class="post-meta-item-text">本文字数：</span> <span title="本文字数">6.9k</span> <span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-clock-o"></i></span> <span class="post-meta-item-text">阅读时长 &asymp;</span> <span title="阅读时长">13 分钟</span></div></div></header><div class="post-body" itemprop="articleBody"><p>域名系统（DNS）是一种用于TCP/IP应用程序的分布式数据库，它提供主机名字和IP地址之间的转换及有关电子邮件的选路信息。这里提到的分布式是指在Internet上的单个站点不能拥有所有的信息。每个站点（如大学中的系、校园、公司或公司中的部门）保留它自己的信息数据库，并运行一个服务器程序供Internet上的其他系统（客户程序）查询。DNS提供了允许服务器和客户程序相互通信的协议。</p><p>从应用的角度上看，对DNS的访问是通过一个地址解析器（resolver）来完成的。在Unix主机中，该解析器主要是通过两个库函数gethostbyname和gethostbyaddr来访问的，它们在编译应用程序时与应用程序连接在一起。前者接收主机名字返回IP地址，而后者接收IP地址来寻找主机名字。解析器通过一个或多个名字服务器来完成这种相互转换。</p><p>解析器并不像TCP/IP协议那样是操作系统的内核。在一个应用程序请求TCP打开一个连接或使用UDP发送一个数据报之前。心须将一个主机名转换为一个IP地址。操作系统内核中的TCP/IP协议族对于DNS一点都不知道。<br><a id="more"></a></p><h2 id="DNS-基础"><a href="#DNS-基础" class="headerlink" title="DNS 基础"></a>DNS 基础</h2><p>DNS的名字空间和Unix的文件系统相似，也具有层次结构，是一个树形结构。</p><p>每个结点有一个至多63个字符长的标识。这颗树的树根是没有任何标识的特殊结点。命名标识中一律不区分大写和小写。命名树上任何一个结点的域名就是将从该结点到最高层的域名串连起来，中间使用一个点“.”分隔这些域名（注意这和Unix文件系统路径的形成不同，文件路径是由树根依次向下的形成的）。域名树中的每个结点必须有一个唯一的域名，但域名树中的不同结点可使用相同的标识。</p><p>以点“.”结尾的域名称为绝对域名或完全合格的域名FQDN（Full Qualified DomainName），例如sun.tuc.noao.edu.。如果一个域名不以点结尾，则认为该域名是不完全的。如何使域名完整依赖于使用的DNS软件。如果不完整的域名由两个或两个以上的标号组成，则认为它是完整的；或者在该域名的右边加入一个局部后缀。例如域名sun通过加上局部后缀.tuc.noao.edu.成为完整的。</p><p>顶级域名被分为三个部分：</p><ol><li>arpa是一个用作地址到名字转换的特殊域。</li><li>7个3字符长的普通域。有些书也将这些域称为组织域。</li><li>所有2字符长的域均是基于ISO3166中定义的国家代码，这些域被称为国家域，或地理域。</li></ol><p>7个普通域的正式划分：</p><table><thead><tr><th style="text-align:center">域</th><th style="text-align:left">描述</th></tr></thead><tbody><tr><td style="text-align:center">com</td><td style="text-align:left">商业机构</td></tr><tr><td style="text-align:center">edu</td><td style="text-align:left">教育机构</td></tr><tr><td style="text-align:center">gov</td><td style="text-align:left">其他美国政府部门</td></tr><tr><td style="text-align:center">int</td><td style="text-align:left">国际组织</td></tr><tr><td style="text-align:center">mil</td><td style="text-align:left">美国军事网点</td></tr><tr><td style="text-align:center">net</td><td style="text-align:left">网络</td></tr><tr><td style="text-align:center">org</td><td style="text-align:left">其他组织</td></tr></tbody></table><p>在DNS中，通常认为3字符长的普通域仅用于美国的组织机构，2字符长的国家域则用国际组织美国军事网点于每个国家，但情况并不总是这样。许多非美国的组织机构仍然使用普通域，而一些美国的其他组织组织机构也使用.us的国家域。普通域中只有.gov和.mil域局限于美国。</p><p>许多国家将它们的二级域组织成类似于普通域的结构：例如，.ac.uk是英国研究机构的二级域名，.co.uk则是英国商业机构的二级域名。</p><p>没有哪个机构来管理域名树中的每个标识，相反，只有一个机构，即网络信息中心NIC负责分配顶级域和委派其他指定地区域的授权机构。</p><p>一个独立管理的DNS子树称为一个区域(zone)。一个常见的区域是一个二级域，如noao.edu。许多二级域将它们的区域划分成更小的区域。例如，大学可能根据不同的系来划分区域，公司可能根据不同的部门来划分区域。</p><p>一旦一个区域的授权机构被委派后，由它负责向该区域提供多个名字服务器。当一个新系统加入到一个区域中时，该区域的DNS管理者为该新系统申请一个域名和一个IP地址，并将它们加到名字服务器的数据库中。这就是授权机构存在的必要性。例如，在一个小规模的大学，一个人就能完成每次新系统的加入。但对一个规模较大的大学来说，这一工作必须被专门委派的机构（可能是系）来完成，因为一个人已无法维持这一工作。</p><p>一个名字服务器负责一个或多个区域。一个区域的管理者必须为该区域提供一个主名字服务器和至少一个辅助名字服务器。主、辅名字服务器必须是独立和冗余的，以便当某个名字服务器发生故障时不会影响该区域的名字服务。</p><p>主、辅名字服务器的主要区别在于主名字服务器从磁盘文件中调入该区域的所有信息，而辅名字服务器则从主服务器调入所有信息。我们将辅名字服务器从主服务器调入信息称为区域传送。</p><p>当一个新主机加入一个区域时，区域管理者将适当的信息（最少包括名字和IP地址）加入到运行在主名字服务器上的一个磁盘文件中，然后通知主名字服务器重新调入它的配置文件。辅名字服务器定时（通常是每隔3小时）向主名字服务器询问是否有新数据。如果有新数据，则通过区域传送方式获得新数据。</p><p>当一个名字服务器没有请求的信息时，它将如何处理？它必须与其他的名字服务器联系。（这正是DNS的分布特性）。然而，并不是每个名字服务器都知道如何同其他名字服务器联系。相反，每个名字服务器必须知道如何同根的名字服务器联系。1993年4月时有8个根名字服务器，所有的主名字服务器都必须知道根服务器的IP地址（这些IP地址在主名字服务器的配置文件中，主服务器必须知道根服务器的IP地址，而不是它们的域名）。根服务器则知道所有二级域中的每个授权名字服务器的名字和位置（即IP地址）。这意味着这样一个反复的过程：正在处理请求的名字服务器与根服务器联系，根服务器告诉它与另一个名字服务器联系。</p><p>DNS的一个基本特性是使用超高速缓存。即当一个名字服务器收到有关映射的信息（主机名字到IP地址）时，它会将该信息存放在高速缓存中。这样若以后遇到相同的映射请求，就能直接使用缓存中的结果而无需通过其他服务器查询。</p><h2 id="DNS-的报文格式"><a href="#DNS-的报文格式" class="headerlink" title="DNS 的报文格式"></a>DNS 的报文格式</h2><p><img src="/images/tcp-ip/dns-format.jpg" alt=""></p><p>这个报文由12字节长的首部和4个长度可变的字段组成。</p><p>标识字段由客户程序设置并由服务器返回结果。客户程序通过它来确定响应与查询是否匹配。</p><p>16 bit的标志字段被划分为若干子字段，从最左位开始依次介绍各子字段：</p><ul><li>QR是1bit字段：0表示查询报文，1表示响应报文。</li><li>opcode是一个4bit字段：通常值为0（标准查询），其他值为1（反向查询）和2（服务器状态请求）。</li><li>AA是1bit标志，表示“授权回答(authoritative answer)”。该名字服务器是授权于该域的。</li><li>TC是1bit字段，表示“可截断的(truncated)”。使用UDP时，它表示当应答的总长度超过512字节时，只返回前512个字节。</li><li>RD是1bit字段表示“期望递归（recursion desired）”。该比特能在一个查询中设置，并在响应中返回。这个标志告诉名字服务器必须处理这个查询，也称为一个递归查询。如果该位为0，且被请求的名字服务器没有一个授权回答，它就返回一个能解答该查询的其他名字服务器列表，这称为迭代查询。</li><li>RA是1bit字段，表示“可用递归”。如果名字服务器支持递归查询，则在响应中将该比特设置为1。大多数名字服务器都提供递归查询，除了某些根服务器。</li><li>随后的3bit字段必须为0。</li><li>rcode是一个4bit的返回码字段。通常的值为0（没有差错）和3（名字差错）。名字差错只有从一个授权名字服务器上返回，它表示在查询中制定的域名不存在。</li></ul><p>随后的4个16 bit字段说明最后4个变长字段中包含的条目数。对于查询报文，问题(question)数通常是1，而其他3项则均为0。类似地，对于应答报文，回答数至少是1，剩下的两项可以是0或非0。</p><h3 id="DNS-查询报文中的问题部分"><a href="#DNS-查询报文中的问题部分" class="headerlink" title="DNS 查询报文中的问题部分"></a>DNS 查询报文中的问题部分</h3><p>问题部分的每个问题的格式如下，通常只有一个问题。</p><p><img src="/images/tcp-ip/question-portion-of-dns-query-format.jpg" alt=""></p><p>查询名是要查找的名字，它是一个或多个标识符的序列。每个标识符以首字节的计数值来说明随后标识符的字节长度，每个名字以最后字节为0结束，长度为0的标识符是根标识符。计数字节的值必须是0~63的数，因为标识符的最大长度仅为63(计数字节的最高两比特为1，即值192~255，将用于压缩格式)。不像我们已经看到的许多其他报文格式，该字段无需以整32 bit边界结束，即无需填充字节。</p><p>每个问题有一个查询类型，而每个响应（也称为一个资源记录）也有一个类型。大约有20个不同的类型值，其中的一些目前已经过时。查询类型是类型的一个超集(superset)：表中显示的类型值中只有两个能用于查询类型。</p><table><thead><tr><th style="text-align:left">名字</th><th style="text-align:left">数值</th><th style="text-align:left">描述</th><th style="text-align:left">类型？</th><th style="text-align:left">查询类型？</th></tr></thead><tbody><tr><td style="text-align:left">A</td><td style="text-align:left">1</td><td style="text-align:left">IP地址</td><td style="text-align:left">*</td><td style="text-align:left">*</td></tr><tr><td style="text-align:left">NS</td><td style="text-align:left">2</td><td style="text-align:left">名字服务器</td><td style="text-align:left">*</td><td style="text-align:left">*</td></tr><tr><td style="text-align:left">CNAME</td><td style="text-align:left">5</td><td style="text-align:left">规范名字</td><td style="text-align:left">*</td><td style="text-align:left">*</td></tr><tr><td style="text-align:left">PTR</td><td style="text-align:left">12</td><td style="text-align:left">指针记录</td><td style="text-align:left">*</td><td style="text-align:left">*</td></tr><tr><td style="text-align:left">HINFO</td><td style="text-align:left">13</td><td style="text-align:left">主机信息</td><td style="text-align:left">*</td><td style="text-align:left">*</td></tr><tr><td style="text-align:left">MX</td><td style="text-align:left">15</td><td style="text-align:left">邮件交换信息</td><td style="text-align:left">*</td><td style="text-align:left">*</td></tr><tr><td style="text-align:left">AXFR</td><td style="text-align:left">252</td><td style="text-align:left">对区域转换的请求</td><td style="text-align:left"></td><td style="text-align:left">*</td></tr><tr><td style="text-align:left">*或ANY</td><td style="text-align:left">255</td><td style="text-align:left">对所有记录的请求</td><td style="text-align:left"></td><td style="text-align:left">*</td></tr></tbody></table><p>最常用的查询类型是A类型，表示期望获得查询名的IP地址。一个PTR查询则请求获得一个IP地址对应的域名。这是一个指针查询。</p><p>查询类通常是1，指互联网地址（某些站点也支持其他非IP地址）。</p><h3 id="DNS-响应报文中的资源记录部分"><a href="#DNS-响应报文中的资源记录部分" class="headerlink" title="DNS 响应报文中的资源记录部分"></a>DNS 响应报文中的资源记录部分</h3><p>DNS报文中最后的三个字段，回答字段、授权字段和附加信息字段，均采用一种称为资源记录RR（Resource Record）的相同格式。资源记录的格式如下：</p><p><img src="/images/tcp-ip/dns-rr-format.jpg" alt=""></p><p>域名是记录中资源数据对应的名字。它的格式和前面介绍的查询名字段格式相同。</p><p>类型说明RR的类型码。它的值和前面介绍的查询类型值是一样的。类通常为1，指Internet数据。</p><p>生存时间字段是客户程序保留该资源记录的秒数。资源记录通常的生存时间值为2天。</p><p>资源数据长度说明资源数据的数量。该数据的格式依赖于类型字段的值。对于类型1（A记录）资源数据是4字节的IP地址。</p><h2 id="指针查询"><a href="#指针查询" class="headerlink" title="指针查询"></a>指针查询</h2><p>DNS中一直难于理解的部分就是指针查询方式，即给定一个IP地址，返回与该地址对应的域名。</p><p>查看一下顶级域arpa，及它下面的in-addr域。当一个组织加入Internet，并获得DNS域名空间的授权，如noao.edu，则它们也获得了对应IP地址的in-addr.arpa域名空间的授权。在noao.edu这个例子中，它是网络号为140.252的B类网络。在DNS树中结点in-addr.arpa的下一级必须是该IP地址的第一字节（140），再下一级为该IP地址的下一个字节（252），依此类推。但应牢记的是DNS名字是由DNS树的底部逐步向上书写的。这意味着对于IP地址为140.252.13.33的sun主机，它的DNS名字为33.13.252.140.in-addr.arpa。</p><p>必须写出4字节的IP地址，因为授权的代表是基于网络号：A类地址是第一字节，B类地址是第一、二字节，C类地址则是第一、二、三字节。IP地址的第一字节一定位于in-addr的下一级，但FQDN却是自树底往上书写的。如果FQDN由顶往下书写，则这个IP地址的DNS名字将是arpa.in-addr.140.252.13.33，而它所对应的域名将是edu.noao.tuc.sun。</p><p>如果DNS树中没有独立的分支来处理这种地址—名字的转换，将无法进行这种反向转换，除非从树根开始依次尝试每个顶级域。毫不夸张地说，这将需要数天或数周的时间。虽然反写IP地址和特殊的域名会造成某些混乱，但in-addr解决方案仍是一种最有效的方式。</p><p>只有在使用host程序或tcpdump程序直接同DNS打交道时，才会担心in-addr域和反写IP地址影响我们。从应用的角度上看，正常的名字解析器函数（gethostbyaddr）将接收一个IP地址并返回对应主机的有关信息。反转这些字节和添加in-addr.arpa域均由该函数自动完成。</p><h3 id="主机名检查"><a href="#主机名检查" class="headerlink" title="主机名检查"></a>主机名检查</h3><p>当一个IP数据报到达一个作为服务器的主机时，无论是UDP数据报还是TCP连接请求，服务器进程所能获得的是客户的IP地址和端口号（UDP或TCP）。某些服务器需要客户的IP地址来获得在DNS中的指针记录。</p><p>其他的一些服务器如Rlogin服务器不但需要客户的IP地址来获得指针记录，还要向DNS询问该IP地址所对应的域名，并检查返回的地址中是否有地址与收到的数据报中的源IP地址匹配。该检查是因为.rhosts文件中的条目仅包含主机名，而没有IP地址，因此主机需要证实该主机名是否对应源IP地址。</p><p>某些厂商将该项检查自动并入其名字解析器的例程中，特别是函数gethostbyaddr。这使得任何使用名字解析器的程序均可获得这种检查，而无需在应用中人为地进行这项检查。</p><h2 id="资源记录"><a href="#资源记录" class="headerlink" title="资源记录"></a>资源记录</h2><p>至今我们已经见到了一些不同类型的资源记录（RR）：IP地址查询为A类型，指针查询为类型PTR。也已看到了由名字服务器返回的资源记录：回答RR、授权RR和附加信息RR。</p><table><thead><tr><th style="text-align:left">类型</th><th style="text-align:left">介绍</th></tr></thead><tbody><tr><td style="text-align:left">A</td><td style="text-align:left">一个A记录定义了一个IP地址，它存储32 bit的二进制数。</td></tr><tr><td style="text-align:left">PTR</td><td style="text-align:left">指针记录用于指针查询。 IP地址被看作是in-addr.arpa域下的一个域名（标识符串）。</td></tr><tr><td style="text-align:left">CNAME</td><td style="text-align:left">这表示“规范名字 (canonical name)”。它用来表示一个域名（标识符串），而有规范名字的域名通常被称为别名 (alias)。某些FTP服务器使用它向其他的系统提供一个易于记忆的别名。</td></tr><tr><td style="text-align:left">HINFO</td><td style="text-align:left">表示主机信息：包括说明主机CPU和操作系统的两个字符串。并非所有的站点均提供它们系统的HINFO记录，并且提供的信息也可能不是最新的。</td></tr><tr><td style="text-align:left">MX</td><td style="text-align:left">邮件交换记录</td></tr><tr><td style="text-align:left">NS</td><td style="text-align:left">名字服务器记录。它说明一个域的授权名字服务器。它由域名表示（符号串）。</td></tr></tbody></table><p>邮件交换记录，用于以下一些场合：（1）一个没有连到Internet的站点能将一个连到Internet的站点作为它的邮件交换器。这两个站点能够用一种交替的方式交换到达的邮件，而通常使用的协议是UUCP协议。（2）MX记录提供了一种将无法到达其目的主机的邮件传送到一个替代主机的方式。（3）MX记录允许机构提供供他人发送邮件的虚拟主机，如cs.university.edu，即使这样的主机名根本不存在。（4）防火墙网关能使用MX记录来限制外界与内部系统的连接。许多不能与Internet连接的站点通过UUCP链路与一个连接在Internet上的站点如UUNET相连接。通过MX记录能使用user@host这种邮件地址向那个站点发送电子邮件。</p><h2 id="高速缓存"><a href="#高速缓存" class="headerlink" title="高速缓存"></a>高速缓存</h2><p>为了减少Internet上DNS的通信量，所有的名字服务器均使用高速缓存。在标准的Unix实现中，高速缓存是由名字服务器而不是由名字解析器维护的。既然名字解析器作为每个应用的一部分，而应用又不可能总处于工作状态，因此将高速缓存放在只要系统（名字服务器）处于工作状态就能起作用的程序中显得很重要。这样任何一个使用名字服务器的应用均可获得高速缓存。在该站点使用这个名字服务器的任何其他主机也能共享服务器的高速缓存。</p><h2 id="用UDP还是TCP"><a href="#用UDP还是TCP" class="headerlink" title="用UDP还是TCP"></a>用UDP还是TCP</h2><p>注意到DNS名字服务器使用的熟知端口号无论对UDP还是TCP都是53。这意味着DNS均支持UDP和TCP访问。那么这两种协议都在什么情况下采用以及采用的理由都是什么呢？</p><p>当名字解析器发出一个查询请求，并且返回响应中的TC（删减标志）比特被设置为1时，它就意味着响应的长度超过了512个字节，而仅返回前512个字节。在遇到这种情况时，名字解析器通常使用TCP重发原来的查询请求，它将允许返回的响应超过512个字节。既然TCP能将用户的数据流分为一些报文段，它就能用多个报文段来传送任意长度的用户数据。</p><p>此外，当一个域的辅助名字服务器在启动时，将从该域的主名字服务器执行区域传送。我们也说过辅助服务器将定时（通常是3小时）向主服务器进行查询以便了解主服务器数据是否发生变动。如果有变动，将执行一次区域传送。区域传送将使用TCP，因为这里传送的数据远比一个查询或响应多得多。</p><p>既然DNS主要使用UDP，无论是名字解析器还是名字服务器都必须自己处理超时和重传。此外，不像其他的使用UDP的Internet应用（TFTP、BOOTP和SNMP），大部分操作集中在局域网上，DNS查询和响应通常经过广域网。分组丢失率和往返时间的不确定性在广域网上比局域网上更大。这样对于DNS客户程序，一个好的重传和超时程序就显得更重要了。</p><h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>DNS是任何与Internet相连主机必不可少的一部分，同时它也广泛用于专用的互联网。层次树是组成DNS域名空间的基本组织形式。</p><p>应用程序通过名字解析器将一个主机名转换为一个IP地址，也可将一个IP地址转换为与之对应的主机名。名字解析器将向一个本地名字服务器发出查询请求，这个名字服务器可能通过某个根名字服务器或其他名字服务器来完成这个查询。</p><p>所有的DNS查询和响应都有相同的报文格式。这个报文格式中包含查询请求和可能的回答资源记录、授权资源记录和附加资源记录。</p></div><div><div style="padding:10px 0;margin:20px auto;width:90%;text-align:center"><div></div> <button id="rewardButton" disable="enable" onclick='var qr=document.getElementById("QR");"none"===qr.style.display?qr.style.display="block":qr.style.display="none"'> <span>打赏</span></button><div id="QR" style="display:none"><div id="wechat" style="display:inline-block"> <img id="wechat_qr" src="/hexo-blog/images/wechatpay.jpg" alt="xuchengpeng 微信支付"><p>微信支付</p></div><div id="alipay" style="display:inline-block"> <img id="alipay_qr" src="/hexo-blog/images/alipay.jpg" alt="xuchengpeng 支付宝"><p>支付宝</p></div></div></div></div><div><ul class="post-copyright"><li class="post-copyright-author"> <strong>本文作者：</strong> xuchengpeng</li><li class="post-copyright-link"> <strong>本文链接：</strong> <a href="http://xuchengpeng.com/hexo-blog/2018/05/14/tcp-ip/tcp-ip-illustrated-volume1-dns/" title="TCP/IP 详解(卷一) DNS：域名系统">http://xuchengpeng.com/hexo-blog/2018/05/14/tcp-ip/tcp-ip-illustrated-volume1-dns/</a></li><li class="post-copyright-license"> <strong>版权声明：</strong> 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li></ul></div><footer class="post-footer"><div class="post-tags"> <a href="/hexo-blog/tags/DNS/" rel="tag"># DNS</a></div><div class="post-widgets"><div id="needsharebutton-postbottom"><span class="btn"><i class="fa fa-share-alt" aria-hidden="true"></i></span></div></div><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/hexo-blog/2018/05/11/emacs-load-packages/" rel="next" title="Emacs load packages"><i class="fa fa-chevron-left"></i> Emacs load packages</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"> <a href="/hexo-blog/2018/05/14/software-collection-site/" rel="prev" title="软件收藏站点">软件收藏站点<i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div><div class="comments" id="comments"></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span><span class="sidebar-toggle-line sidebar-toggle-line-middle"></span><span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap"> 文章目录</li><li class="sidebar-nav-overview" data-target="site-overview-wrap"> 站点概览</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person"> <img class="site-author-image" itemprop="image" src="/hexo-blog/images/bio-photo.jpg" alt="xuchengpeng"><p class="site-author-name" itemprop="name">xuchengpeng</p><p class="site-description motion-element" itemprop="description">Valar Morghulis. Valar Dohaeris.</p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"> <a href="/hexo-blog/archives/"><span class="site-state-item-count">111</span> <span class="site-state-item-name">日志</span></a></div><div class="site-state-item site-state-categories"> <a href="/hexo-blog/categories/index.html"><span class="site-state-item-count">19</span> <span class="site-state-item-name">分类</span></a></div><div class="site-state-item site-state-tags"> <a href="/hexo-blog/tags/index.html"><span class="site-state-item-count">86</span> <span class="site-state-item-name">标签</span></a></div></nav><div class="feed-link motion-element"><a href="/hexo-blog/atom.xml" rel="alternate"><i class="fa fa-rss"></i> RSS</a></div><div class="links-of-author motion-element"><span class="links-of-author-item"><a href="https://www.google.com/maps" target="_blank" title="Wuhan, China"><i class="fa fa-fw fa-map-marker"></i> Wuhan, China</a></span><span class="links-of-author-item"><a href="mailto:xucp@outlook.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i> E-Mail</a></span><span class="links-of-author-item"><a href="https://github.com/xuchengpeng" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i> GitHub</a></span><span class="links-of-author-item"><a href="https://bitbucket.org/xuchengpeng" target="_blank" title="Bitbucket"><i class="fa fa-fw fa-bitbucket"></i> Bitbucket</a></span></div><div class="cc-license motion-element" itemprop="license"> <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank"><img src="/hexo-blog/images/cc-by-nc-sa.svg" alt="Creative Commons"></a></div><div class="links-of-blogroll motion-element links-of-blogroll-inline"><div class="links-of-blogroll-title"><i class="fa fa-fw fa-link"></i> 友情链接</div><ul class="links-of-blogroll-list"><li class="links-of-blogroll-item"> <a href="https://github.com/xuchengpeng/emacs.d" title="Chuck's Emacs Configuration" target="_blank">Chuck's Emacs Configuration</a></li><li class="links-of-blogroll-item"> <a href="http://harmonyhu.com/" title="HarmonyHu" target="_blank">HarmonyHu</a></li><li class="links-of-blogroll-item"> <a href="https://www.linode.com/" title="linode" target="_blank">linode</a></li><li class="links-of-blogroll-item"> <a href="https://github.com/shadowsocks" title="shadowsocks" target="_blank">shadowsocks</a></li><li class="links-of-blogroll-item"> <a href="https://leancloud.cn/" title="LeanCloud" target="_blank">LeanCloud</a></li><li class="links-of-blogroll-item"> <a href="https://travis-ci.org/" title="Travis CI" target="_blank">Travis CI</a></li><li class="links-of-blogroll-item"> <a href="https://github.com/theme-next/hexo-theme-next" title="NexT" target="_blank">NexT</a></li></ul></div></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS-基础"><span class="nav-number">1.</span> <span class="nav-text">DNS 基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS-的报文格式"><span class="nav-number">2.</span> <span class="nav-text">DNS 的报文格式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS-查询报文中的问题部分"><span class="nav-number">2.1.</span> <span class="nav-text">DNS 查询报文中的问题部分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS-响应报文中的资源记录部分"><span class="nav-number">2.2.</span> <span class="nav-text">DNS 响应报文中的资源记录部分</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指针查询"><span class="nav-number">3.</span> <span class="nav-text">指针查询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#主机名检查"><span class="nav-number">3.1.</span> <span class="nav-text">主机名检查</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#资源记录"><span class="nav-number">4.</span> <span class="nav-text">资源记录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高速缓存"><span class="nav-number">5.</span> <span class="nav-text">高速缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用UDP还是TCP"><span class="nav-number">6.</span> <span class="nav-text">用UDP还是TCP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">7.</span> <span class="nav-text">小结</span></a></li></ol></div></div></section></div></aside></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2019</span><span class="with-love" id="animate"><i class="fa fa-"></i></span> <span class="author" itemprop="copyrightHolder">xuchengpeng</span> <span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-area-chart"></i></span> <span class="post-meta-item-text">站点总字数：</span> <span title="站点总字数">338k</span> <span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-coffee"></i></span> <span class="post-meta-item-text">站点阅读时长 &asymp;</span> <span title="站点阅读时长">10:14</span></div><script type="text/javascript">!function(){var e=document.createElement("script");e.src="//tajs.qq.com/stats?sId=64245444";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}()</script></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i> <span id="scrollpercent"><span>0</span>%</span></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.1/velocity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.1/velocity.ui.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.2.5/dist/jquery.fancybox.js"></script><script type="text/javascript" src="/hexo-blog/js/src/utils.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/motion.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/affix.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/schemes/pisces.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/scrollspy.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/post-details.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/bootstrap.js?v=6.3.0"></script><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script type="text/javascript">var GUEST=["nick","mail","link"],guest="nick,mail,link";guest=guest.split(",").filter(function(e){return-1<GUEST.indexOf(e)}),new Valine({el:"#comments",verify:!1,notify:!1,appId:"8cGx0mI721mXnuSact0PLKmV-gzGzoHsz",appKey:"eQc0CtLv9s4VTdObz6ux8lVW",placeholder:"Leave your comments here...",avatar:"wavatar",guest_info:guest,pageSize:"10"})</script><script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/hexo-blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script><script>AV.initialize("8cGx0mI721mXnuSact0PLKmV-gzGzoHsz","eQc0CtLv9s4VTdObz6ux8lVW")</script><script>function showTime(e){var t=new AV.Query(e),c=[],u=$(".leancloud_visitors");u.each(function(){c.push($(this).attr("id").trim())}),t.containedIn("url",c),t.find().done(function(e){var t=".leancloud-visitors-count";if(0!==e.length){for(var n=0;n<e.length;n++){var o=e[n],i=o.get("url"),s=o.get("time"),r=document.getElementById(i);$(r).find(t).text(s)}for(n=0;n<c.length;n++){i=c[n],r=document.getElementById(i);var l=$(r).find(t);""==l.text()&&l.text(0)}}else u.find(t).text(0)}).fail(function(e,t){console.log("Error: "+t.code+" "+t.message)})}function addCount(i){var e=$(".leancloud_visitors"),s=e.attr("id").trim(),r=e.attr("data-flag-title").trim(),t=new AV.Query(i);t.equalTo("url",s),t.find({success:function(e){if(0<e.length){var t=e[0];t.fetchWhenSave(!0),t.increment("time"),t.save(null,{success:function(e){$(document.getElementById(s)).find(".leancloud-visitors-count").text(e.get("time"))},error:function(e,t){console.log("Failed to save Visitor num, with error message: "+t.message)}})}else{var n=new i,o=new AV.ACL;o.setPublicReadAccess(!0),o.setPublicWriteAccess(!0),n.setACL(o),n.set("title",r),n.set("url",s),n.set("time",1),n.save(null,{success:function(e){$(document.getElementById(s)).find(".leancloud-visitors-count").text(e.get("time"))},error:function(e,t){console.log("Failed to create")}})}},error:function(e){console.log("Error:"+e.code+" "+e.message)}})}$(function(){var e=AV.Object.extend("Counter");1==$(".leancloud_visitors").length?addCount(e):1<$(".post-title-link").length&&showTime(e)})</script><script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@latest/needsharebutton.min.js"></script><script>pbOptions={iconStyle:"box",boxForm:"horizontal",position:"bottomCenter",networks:"Weibo,Wechat,Douban,QQZone,Twitter,Facebook"},new needShareButton("#needsharebutton-postbottom",pbOptions)</script></body></html>

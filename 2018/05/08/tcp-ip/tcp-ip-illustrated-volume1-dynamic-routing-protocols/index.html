@@ -1,0 +1,319 @@
+<!DOCTYPE html><html class="theme-next gemini use-motion" lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=2"><meta name="theme-color" content="#222"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@latest/needsharebutton.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><link href="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/themes/blue/pace-theme-flash.css" rel="stylesheet"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.2.5/dist/jquery.fancybox.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"><link href="/hexo-blog/css/main.css?v=6.3.0" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/hexo-blog/images/apple-touch-icon.png?v=6.3.0"><link rel="icon" type="image/png" sizes="32x32" href="/hexo-blog/images/favicon-32x32.ico?v=6.3.0"><link rel="icon" type="image/png" sizes="16x16" href="/hexo-blog/images/favicon-16x16.ico?v=6.3.0"><link rel="mask-icon" href="/hexo-blog/images/favicon-logo.svg?v=6.3.0" color="#222"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/hexo-blog/",scheme:"Gemini",version:"6.3.0",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!0,onmobile:!1},fancybox:!0,fastclick:!1,lazyload:!1,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><meta name="description" content="静态选路：在配置接口时，以默认方式生成路由表项（对于直接连接的接口），并通过route命令增加表项（通常从系统自引导程序文件），或是通过ICMP重定向生成表项（通常是在默认方式出错的情况下）。 在网络很小，且与其他网络只有单个连接点且没有多余路由时（若主路由失败，可以使用备用路由），采用这种方法是可行的。如果上述三种情况不能全部满足，通常使用动态选路。 动态选路当相邻路由器之间进行通信，以告知对方"><meta name="keywords" content="RIP,OSPF,BGP,CIDR"><meta property="og:type" content="article"><meta property="og:title" content="TCP&#x2F;IP 详解(卷一) 动态选路协议"><meta property="og:url" content="http://xuchengpeng.com/hexo-blog/2018/05/08/tcp-ip/tcp-ip-illustrated-volume1-dynamic-routing-protocols/index.html"><meta property="og:site_name" content="xuchengpeng"><meta property="og:description" content="静态选路：在配置接口时，以默认方式生成路由表项（对于直接连接的接口），并通过route命令增加表项（通常从系统自引导程序文件），或是通过ICMP重定向生成表项（通常是在默认方式出错的情况下）。 在网络很小，且与其他网络只有单个连接点且没有多余路由时（若主路由失败，可以使用备用路由），采用这种方法是可行的。如果上述三种情况不能全部满足，通常使用动态选路。 动态选路当相邻路由器之间进行通信，以告知对方"><meta property="og:locale" content="zh-CN"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/rip-format.jpg"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/rip-metrics-example.jpg"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/rip-2-format.jpg"><meta property="og:updated_time" content="2019-01-06T06:24:55.970Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="TCP&#x2F;IP 详解(卷一) 动态选路协议"><meta name="twitter:description" content="静态选路：在配置接口时，以默认方式生成路由表项（对于直接连接的接口），并通过route命令增加表项（通常从系统自引导程序文件），或是通过ICMP重定向生成表项（通常是在默认方式出错的情况下）。 在网络很小，且与其他网络只有单个连接点且没有多余路由时（若主路由失败，可以使用备用路由），采用这种方法是可行的。如果上述三种情况不能全部满足，通常使用动态选路。 动态选路当相邻路由器之间进行通信，以告知对方"><meta name="twitter:image" content="http://xuchengpeng.com/images/tcp-ip/rip-format.jpg"><link rel="alternate" href="/hexo-blog/atom.xml" title="xuchengpeng" type="application/atom+xml"><link rel="canonical" href="http://xuchengpeng.com/hexo-blog/2018/05/08/tcp-ip/tcp-ip-illustrated-volume1-dynamic-routing-protocols/"><script type="text/javascript" id="page.configurations">CONFIG.page={sidebar:""}</script><title>TCP/IP 详解(卷一) 动态选路协议 | xuchengpeng</title><noscript><style type="text/css">.sidebar-inner,.use-motion .brand,.use-motion .collection-title,.use-motion .comments,.use-motion .menu-item,.use-motion .motion-element,.use-motion .pagination,.use-motion .post-block,.use-motion .post-body,.use-motion .post-header{opacity:initial}.use-motion .logo,.use-motion .site-subtitle,.use-motion .site-title{opacity:initial;top:initial}.logo-line-after i{right:initial}</style></noscript></head><body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/hexo-blog/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">xuchengpeng</span><span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle">Valar Morghulis. Valar Dohaeris.</p></div><div class="site-nav-toggle"> <button aria-label="切换导航栏"><span class="btn-bar"></span><span class="btn-bar"></span><span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/hexo-blog/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>首页</a></li><li class="menu-item menu-item-archives"><a href="/hexo-blog/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>归档</a></li><li class="menu-item menu-item-categories"><a href="/hexo-blog/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i><br>分类</a></li><li class="menu-item menu-item-tags"><a href="/hexo-blog/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i><br>标签</a></li><li class="menu-item menu-item-留言"><a href="/hexo-blog/guestbook/" rel="section"><i class="menu-item-icon fa fa-fw fa-commenting"></i><br>留言</a></li><li class="menu-item menu-item-about"><a href="/hexo-blog/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i><br>关于</a></li><li class="menu-item menu-item-search"><a href="javascript:;" class="popup-trigger"><i class="menu-item-icon fa fa-search fa-fw"></i><br>搜索</a></li></ul><div class="site-search"><div class="popup search-popup local-search-popup"><div class="local-search-header clearfix"><span class="search-icon"><i class="fa fa-search"></i></span><span class="popup-btn-close"><i class="fa fa-times-circle"></i></span><div class="local-search-input-wrapper"> <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input"></div></div><div id="local-search-result"></div></div></div></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://xuchengpeng.com/hexo-blog/hexo-blog/2018/05/08/tcp-ip/tcp-ip-illustrated-volume1-dynamic-routing-protocols/"><span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person"><meta itemprop="name" content="xuchengpeng"><meta itemprop="description" content="Valar Morghulis. Valar Dohaeris."><meta itemprop="image" content="/hexo-blog/images/bio-photo.jpg"></span><span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization"><meta itemprop="name" content="xuchengpeng"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">TCP/IP 详解(卷一) 动态选路协议</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i></span> <span class="post-meta-item-text">发表于</span> <time title="创建时间：2018-05-08 09:51:32" itemprop="dateCreated datePublished" datetime="2018-05-08T09:51:32+08:00">2018-05-08</time></span> <span class="post-category"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-folder-o"></i></span> <span class="post-meta-item-text">分类于</span> <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/hexo-blog/categories/Study/" itemprop="url" rel="index"><span itemprop="name">Study</span></a></span> ， <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/hexo-blog/categories/Study/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span></span> <span class="post-comments-count"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-comment-o"></i></span> <a href="/hexo-blog/2018/05/08/tcp-ip/tcp-ip-illustrated-volume1-dynamic-routing-protocols/#comments" itemprop="discussionUrl"><span class="post-meta-item-text">评论数：</span><span class="post-comments-count valine-comment-count" data-xid="/hexo-blog/2018/05/08/tcp-ip/tcp-ip-illustrated-volume1-dynamic-routing-protocols/" itemprop="commentCount"></span></a></span> <span id="/hexo-blog/2018/05/08/tcp-ip/tcp-ip-illustrated-volume1-dynamic-routing-protocols/" class="leancloud_visitors" data-flag-title="TCP/IP 详解(卷一) 动态选路协议"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-eye"></i></span> <span class="post-meta-item-text">阅读次数：</span><span class="leancloud-visitors-count"></span></span><div class="post-symbolscount"><span class="post-meta-item-icon"><i class="fa fa-file-word-o"></i></span> <span class="post-meta-item-text">本文字数：</span> <span title="本文字数">7.4k</span> <span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-clock-o"></i></span> <span class="post-meta-item-text">阅读时长 &asymp;</span> <span title="阅读时长">13 分钟</span></div></div></header><div class="post-body" itemprop="articleBody"><p>静态选路：在配置接口时，以默认方式生成路由表项（对于直接连接的接口），并通过route命令增加表项（通常从系统自引导程序文件），或是通过ICMP重定向生成表项（通常是在默认方式出错的情况下）。</p><p>在网络很小，且与其他网络只有单个连接点且没有多余路由时（若主路由失败，可以使用备用路由），采用这种方法是可行的。如果上述三种情况不能全部满足，通常使用动态选路。</p><h2 id="动态选路"><a href="#动态选路" class="headerlink" title="动态选路"></a>动态选路</h2><p>当相邻路由器之间进行通信，以告知对方每个路由器当前所连接的网络，这时就出现了动态选路。路由器之间必须采用选路协议进行通信，这样的选路协议有很多种。路由器上有一个进程称为路由守护程序（routing daemon），它运行选路协议，并与其相邻的一些路由器进行通信。路由守护程序根据它从相邻路由器接收到的信息，更新内核中的路由表。</p><p>动态选路并不改变内核在IP层的选路方式。这种选路方式称为选路机制（routing mechanism）。内核搜索路由表，查找主机路由、网络路由以及默认路由的方式并没有改变。仅仅是放置到路由表中的信息改变了—当路由随时间变化时，路由是由路由守护程序动态地增加或删除，而不是来自于自引导程序文件中的route命令。</p><p>路由守护程序将选路策略（routing policy）加入到系统中，选择路由并加入到内核的路由表中。如果守护程序发现前往同一信宿存在多条路由，那么它（以某种方法）将选择最佳路由并加入内核路由表中。如果路由守护程序发现一条链路已经断开（可能是路由器崩溃或电话线路不好），它可以删除受影响的路由或增加另一条路由以绕过该问题。<br><a id="more"></a></p><p>在像Internet这样的系统中，目前采用了许多不同的选路协议。Internet是以一组自治系统(AS，Autonomous System)的方式组织的，每个自治系统通常由单个实体管理。常常将一个公司或大学校园定义为一个自治系统。NSFNET的Internet骨干网形成一个自治系统，这是因为骨干网中的所有路由器都在单个的管理控制之下。</p><p>每个自治系统可以选择该自治系统中各个路由器之间的选路协议。这种协议我们称之为内部网关协议IGP（Interior Gateway Protocol）或域内选路协议（intradomain routing protocol）。最常用的IGP是选路信息协议RIP。一种新的IGP是开放最短路径优先OSPF（Open Shortest Path First）协议。它意在取代RIP。另一种1986年在原来NSFNET骨干网上使用的较早的IGP协议——HELLO，现在已经不用了。</p><p>外部网关协议EGP（Exterier Gateway Protocol）或域内选路协议的分隔选路协议用于不同自治系统之间的路由器。在历史上，（令人容易混淆）改进的EGP有着一个与它名称相同的协议：EGP。新EGP是当前在NSFNET骨干网和一些连接到骨干网的区域性网络上使用的是边界网关协议BGP（Border Gateway Protocol）。BGP意在取代EGP。</p><h2 id="Unix-选路守护程序"><a href="#Unix-选路守护程序" class="headerlink" title="Unix 选路守护程序"></a>Unix 选路守护程序</h2><p>Unix系统上常常运行名为routed路由守护程序。几乎在所有的TCP/IP实现中都提供该程序。该程序只使用RIP进行通信。这是一种用于小型到中型网络中的协议。</p><p>另一个程序是gated。IGP和EGP都支持它。[Fedor 1998]描述了早期开发的gated。大多数运行路由守护程序的系统都可以运行routed，除非它们需要支持gated所支持的其他协议。</p><table><thead><tr><th style="text-align:left">守护程序</th><th style="text-align:center">HELLO(IGP)</th><th style="text-align:center">RIP(IGP)</th><th style="text-align:center">OSPF(IGP)</th><th style="text-align:center">EGP(EGP)</th><th style="text-align:center">BGP(EGP)</th></tr></thead><tbody><tr><td style="text-align:left">routed</td><td style="text-align:center"></td><td style="text-align:center">V1</td><td style="text-align:center"></td><td style="text-align:center"></td><td style="text-align:center"></td></tr><tr><td style="text-align:left">gated, 版本2</td><td style="text-align:center">*</td><td style="text-align:center">V1</td><td style="text-align:center"></td><td style="text-align:center">*</td><td style="text-align:center">V1</td></tr><tr><td style="text-align:left">gated, 版本3</td><td style="text-align:center">*</td><td style="text-align:center">V1,V2</td><td style="text-align:center">V2</td><td style="text-align:center">*</td><td style="text-align:center">V2,V3</td></tr></tbody></table><h2 id="RIP-选路信息协议"><a href="#RIP-选路信息协议" class="headerlink" title="RIP: 选路信息协议"></a>RIP: 选路信息协议</h2><h3 id="报文格式"><a href="#报文格式" class="headerlink" title="报文格式"></a>报文格式</h3><p>RIP 报文包含在 UDP 数据报中：<br>| IP首部(20字节) | UDP首部(8字节) | RIP报文 |</p><p>命令字段为1表示请求，2表示应答。还有两个舍弃不用的命令（3和4），两个非正式的命令：轮询（5）和轮询表项（6）。请求表示要求其他系统发送其全部或部分路由表。应答则包含发送者全部或部分路由表。</p><p>版本字段通常为1，而第2版RIP将此字段设置为2。</p><p>紧跟在后面的20字节指定地址系列（address family）（对于IP地址来说，其值是2）、IP地址以及相应的度量。RIP的度量是以跳计数的。</p><p>采用这种20字节格式的RIP报文可以通告多达25条路由。上限25是用来保证RIP报文的总长度为20×25+4=504，小于512字节。由于每个报文最多携带25个路由，因此为了发送整个路由表，经常需要多个报文。</p><p><img src="/images/tcp-ip/rip-format.jpg" alt=""></p><h3 id="正常运行"><a href="#正常运行" class="headerlink" title="正常运行"></a>正常运行</h3><p>RIP常用的UDP端口号是520。</p><ul><li>初始化：在启动一个路由守护程序时，它先判断启动了哪些接口，并在每个接口上发送一个请求报文，要求其他路由器发送完整路由表。在点对点链路中，该请求是发送给其他终点的。如果网络支持广播的话，这种请求是以广播形式发送的。目的UDP端口号是520（这是其他路由器的路由守护程序端口号）。 这种请求报文的命令字段为1，但地址系列字段设置为0，而度量字段设置为16。这是一种要求另一端完整路由表的特殊请求报文。</li><li>接收到请求。如果这个请求是刚才提到的特殊请求，那么路由器就将完整的路由表发送给请求者。否则，就处理请求中的每一个表项：如果有连接到指明地址的路由，则将度量设置成我们的值，否则将度量置为16（度量为16是一种称为“无穷大”的特殊值，它意味着没有到达目的的路由）。然后发回响应。</li><li>接收到响应。使响应生效，可能会更新路由表。可能会增加新表项，对已有的表项进行修改，或是将已有表项删除。</li><li>定期选路更新。每过30秒，所有或部分路由器会将其完整路由表发送给相邻路由器。发送路由表可以是广播形式的（如在以太网上），或是发送给点对点链路的其他终点的。</li><li>触发更新。每当一条路由的度量发生变化时，就对它进行更新。不需要发送完整路由表，而只需要发送那些发生变化的表项。</li></ul><p>每条路由都有与之相关的定时器。如果运行RIP的系统发现一条路由在3分钟内未更新，就将该路由的度量设置成无穷大（16），并标注为删除。这意味着已经在6个30秒更新时间里没收到通告该路由的路由器的更新了。再过60秒，将从本地路由表中删除该路由，以保证该路由的失效已被传播开。</p><h3 id="度量"><a href="#度量" class="headerlink" title="度量"></a>度量</h3><p>RIP所使用的度量是以跳(hop)计算的。所有直接连接接口的跳数为1。</p><p><img src="/images/tcp-ip/rip-metrics-example.jpg" alt=""></p><p>路由器R1通过发送广播到N1通告它与N2之间的跳数是1(发送给N1的广播中通告它与N1之间的路由是无用的)。同时也通过发送广播给N2通告它与N1之间的跳数为1。同样，R2通告它与N2的度量为1，与N3的度量为1。</p><p>如果相邻路由器通告它与其他网络由的跳数为1，那么我们与那个网络的度量就是2，这是因为为了发送报文到该网络，我们必须经过那个路由器。在我们的例子中，R2到N1的度量是2，与R1到N3的度量一样。</p><p>由于每个路由器都发送其路由表给邻站，因此，可以判断在同一个自治系统AS内到每个网络的路由。如果在该AS内从一个路由器到一个网络有多条路由，那么路由器将选择跳数最小的路由，而忽略其他路由。</p><p>跳数的最大值是15，这意味着RIP只能用在主机间最大跳数值为15的AS内。度量为16表示到无路由到达该IP地址。</p><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>这种方法看起来很简单，但它有一些缺陷。首先，RIP没有子网地址的概念。例如，如果标准的B类地址中16 bit的主机号不为0，那么RIP无法区分非零部分是一个子网号，或者是一个主机地址。有一些实现中通过接收到的RIP信息，来使用接口的网络掩码，而这有可能出错。</p><p>其次，在路由器或链路发生故障后，需要很长的一段时间才能稳定下来。这段时间通常需要几分钟。在这段建立时间里，可能会发生路由环路。在实现RIP时，必须采用很多微妙的措施来防止路由环路的出现，并使其尽快建立。RFC 1058 [Hedrick 1988a]中指出了很多实现RIP的细节。</p><p>采用跳数作为路由度量忽略了其他一些应该考虑的因素。同时，度量最大值为15则限制了可以使用RIP的网络的大小。</p><h2 id="RIP-版本2"><a href="#RIP-版本2" class="headerlink" title="RIP 版本2"></a>RIP 版本2</h2><p>RFC 1388 [Malkin 1993a]中对RIP定义进行了扩充，通常称其结果为RIP-2。这些扩充并不改变协议本身，而是利用版本1中的一些标注为“必须为0”的字段来传递一些额外的信息。如果RIP忽略这些必须为0的字段，那么，RIP和RIP-2可以互操作。</p><p>对于RIP-2来说，其版本字段为2。</p><p><img src="/images/tcp-ip/rip-2-format.jpg" alt=""></p><p>选路域(routing domain)是一个选路守护程序的标识符，它指出了这个数据报的所有者。在一个Unix实现中，它可以是选路守护程序的进程号。该域允许管理者在单个路由器上运行多个RIP实例，每个实例在一个选路域内运行。</p><p>选路标记(routing tag)是为了支持外部网关协议而存在的。它携带着一个EGP和BGP的自治系统号。</p><p>每个表项的子网掩码应用于相应的IP地址上。下一站IP地址指明发往目的IP地址的报文该发往哪里。该字段为0意味着发往目的地址的报文应该发给发送RIP报文的系统。</p><p>RIP-2提供了一种简单的鉴别机制。可以指定RIP报文的前20字节表项地址系列为0xffff，路由标记为2。表项中的其余16字节包含一个明文口令。</p><p>最后，RIP-2除了广播外，还支持多播。这可以减少不收听RIP-2报文的主机的负载。</p><h2 id="OSPF-开放最短路径优先"><a href="#OSPF-开放最短路径优先" class="headerlink" title="OSPF: 开放最短路径优先"></a>OSPF: 开放最短路径优先</h2><p>OSPF是除RIP外的另一个内部网关协议。它克服了RIP的所有限制。RFC 1247[Moy 1991]中对第2版OSPF进行了描述。</p><p>与采用距离向量的RIP协议不同的是，OSPF是一个链路状态协议。距离向量的意思是，RIP发送的报文包含一个距离向量（跳数）。每个路由器都根据它所接收到邻站的这些距离向量来更新自己的路由表。</p><p>在一个链路状态协议中，路由器并不与其邻站交换距离信息。它采用的是每个路由器主动地测试与其邻站相连链路的状态，将这些信息发送给它的其他邻站，而邻站将这些信息在自治系统中传播出去。每个路由器接收这些链路状态信息，并建立起完整的路由表。</p><p>从实际角度来看，二者的不同点是链路状态协议总是比距离向量协议收敛更快。收敛的意思是在路由发生变化后，例如在路由器关闭或链路出故障后，可以稳定下来。</p><p>OSPF与RIP（以及其他选路协议）的不同点在于，OSPF直接使用IP。也就是说，它并不使用UDP或TCP。对于IP首部的protocol字段，OSPF有其自己的值。</p><p>另外，作为一种链路状态协议而不是距离向量协议，OSPF还有着一些优于RIP的特点。</p><ol><li>OSPF可以对每个IP服务类型计算各自的路由集。这意味着对于任何目的，可以有多个路由表表项，每个表项对应着一个IP服务类型。</li><li>给每个接口指派一个无维数的费用。可以通过吞吐率、往返时间、可靠性或其他性能来进行指派。可以给每个IP服务类型指派一个单独的费用。</li><li>当对同一个目的地址存在着多个相同费用的路由时，OSPF在这些路由上平均分配流量。我们称之为流量平衡。</li><li>OSPF支持子网：子网掩码与每个通告路由相连。这样就允许将一个任何类型的IP地址分割成多个不同大小的子网（变长度子网）。到一个主机的路由是通过全1子网掩码进行通告的。默认路由是以IP地址为0.0.0.0、网络掩码为全0进行通告的。</li><li>路由器之间的点对点链路不需要每端都有一个IP地址，我们称之为无编号网络。这样可以节省IP地址—现在非常紧缺的一种资源。</li><li>采用了一种简单鉴别机制。可以采用类似于RIP-2机制的方法指定一个明文口令。</li><li>OSPF采用多播，而不是广播形式，以减少不参与OSPF的系统负载。</li></ol><p>随着大部分厂商支持OSPF，在很多网络中OSPF将逐步取代RIP。</p><h2 id="BGP-边界网关协议"><a href="#BGP-边界网关协议" class="headerlink" title="BGP: 边界网关协议"></a>BGP: 边界网关协议</h2><p>BGP是一种不同自治系统的路由器之间进行通信的外部网关协议。BGP是ARPANET所使用的老EGP的取代品。RFC1267 [Lougheed and Rekhter 1991]对第3版的BGP进行了描述。</p><p>BGP系统与其他BGP系统之间交换网络可到达信息。这些信息包括数据到达这些网络所必须经过的自治系统AS中的所有路径。这些信息足以构造一幅自治系统连接图。然后，可以根据连接图删除选路环，制订选路策略。</p><p>首先，我们将一个自治系统中的IP数据报分成本地流量和通过流量。在自治系统中，本地流量是起始或终止于该自治系统的流量。也就是说，其信源IP地址或信宿IP地址所指定的主机位于该自治系统中。其他的流量则称为通过流量。在Internet中使用BGP的一个目的就是减少通过流量。</p><p>可以将自治系统分为以下几种类型：</p><ol><li>残桩自治系统(stub AS)，它与其他自治系统只有单个连接。stub AS只有本地流量。</li><li>多接口自治系统(multihomed AS)，它与其他自治系统有多个连接，但拒绝传送通过流量。</li><li>转送自治系统(transit AS)，它与其他自治系统有多个连接，在一些策略准则之下，它可以传送本地流量和通过流量。</li></ol><p>这样，可以将Internet的总拓扑结构看成是由一些残桩自治系统、多接口自治系统以及转送自治系统的任意互连。残桩自治系统和多接口自治系统不需要使用BGP——它们通过运行EGP在自治系统之间交换可到达信息。</p><p>BGP允许使用基于策略的选路。由自治系统管理员制订策略，并通过配置文件将策略指定给BGP。制订策略并不是协议的一部分，但指定策略允许BGP实现在存在多个可选路径时选择路径，并控制信息的重发送。选路策略与政治、安全或经济因素有关。</p><p>BGP与RIP和OSPF的不同之处在于BGP使用TCP作为其传输层协议。两个运行BGP的系统之间建立一条TCP连接，然后交换整个BGP路由表。从这个时候开始，在路由表发生变化时，再发送更新信号。</p><p>BGP是一个距离向量协议，但是与（通告到目的地址跳数的）RIP不同的是，BGP列举了到每个目的地址的路由（自治系统到达目的地址的序列号）。这样就排除了一些距离向量协议的问题。采用16 bit数字表示自治系统标识。</p><p>BGP通过定期发送keepalive报文给其邻站来检测TCP连接对端的链路或主机失败。两个报文之间的时间间隔建议值为30秒。应用层的keepalive报文与TCP的keepalive选项是独立的。</p><h2 id="CIDR-无类型域间选路"><a href="#CIDR-无类型域间选路" class="headerlink" title="CIDR: 无类型域间选路"></a>CIDR: 无类型域间选路</h2><p>由于B类地址的缺乏，因此现在的多个网络站点只能采用多个C类网络号，而不采用单个B类网络号。尽管分配这些C类地址解决了一个问题（B类地址的缺乏），但它却带来了另一个问题：每个C类网络都需要一个路由表表项。无类型域间选路（CIDR）是一个防止Internet路由表膨胀的方法，它也称为超网（supernetting）。</p><p>CIDR的基本观点是采用一种分配多个IP地址的方式，使其能够将路由表中的许多表项总和(summarization)成更少的数目。例如，如果给单个站点分配16个C类地址，以一种可以用总和的方式来分配这16个地址，这样，所有这16个地址可以参照Internet上的单个路由表表项。同时，如果有8个不同的站点是通过同一个Internet服务提供商的同一个连接点接入Internet的，且这8个站点分配的8个不同IP地址可以进行总和，那么，对于这8个站点，在Internet上，只需要单个路由表表项。</p><p>要使用这种总和，必须满足以下三种特性：</p><ol><li>为进行选路要对多个IP地址进行总和时，这些IP地址必须具有相同的高位地址比特。</li><li>路由表和选路算法必须扩展成根据32 bit IP地址和32 bit掩码做出选路决策。</li><li>必须扩展选路协议使其除了32 bit地址外，还要有32 bit掩码。OSPF和RIP-2都能够携带第4版BGP所提出的32 bit掩码。</li></ol><p>例如，RFC 1466 [Gerich 1993]建议欧洲新的C类地址的范围是194.0.0.0～195.255.255.255。以16进制表示，这些地址的范围是0xc2000000～0xc3ffffff。它代表了65536个不同的C类网络号，但它们地址的高7bit是相同的。在欧洲以外的国家里，可以采用IP地址为0xc2000000和32 bit 0xfe000000(254.0.0.0)为掩码的单个路由表表项来对所有这些65536个C类网络号选路到单个点上。C类地址的后面各比特位（即在194或195后面各比特）也可以进行层次分配，例如以国家或服务提供商分配，以允许对在欧洲路由器之间使用除了这32 bit掩码的高7bit外的其他比特进行概括。</p><p>CIDR同时还使用一种技术，使最佳匹配总是最长的匹配：即在32 bit掩码中，它具有最大值。我们继续采用上一段中所用的例子，欧洲的一个服务提供商可能会采用一个与其他欧洲服务提供商不同的接入点。如果给该提供商分配的地址组是从 194.0.16.0到 194.0.31.255(16个C类网络号)，那么可能只有这些网络的路由表项的IP地址是 194.0.16.0，掩码为 255.255.240.0(0xfffff 000)。发往194.0.22.1地址的数据报将同时与这个路由表表项和其他欧洲C类地址的表项进行匹配。但是由于掩码 255.255.240 比 254.0.0.0 更“长”，因此将采用具有更长掩码的路由表表项。</p><p>“无类型”的意思是现在的选路决策是基于整个32 bit IP地址的掩码操作，而不管其IP地址是A类、B类或是C类，都没有什么区别。</p><p>CIDR最初是针对新的C类地址提出的。这种变化将使Internet路由表增长的速度缓慢下来，但对于现存的选路则没有任何帮助。这是一个短期解决方案。作为一个长期解决方案，如果将CIDR应用于所有IP地址，并根据各洲边界和服务提供商对已经存在的IP地址进行重新分配（且所有现有主机重新进行编址！），那么[Ford, Rekhter, and Braun 1993]宣称，目前包含10 000网络表项的路由表将会减少成只有200个表项。</p></div><div><div style="padding:10px 0;margin:20px auto;width:90%;text-align:center"><div></div> <button id="rewardButton" disable="enable" onclick='var qr=document.getElementById("QR");"none"===qr.style.display?qr.style.display="block":qr.style.display="none"'> <span>打赏</span></button><div id="QR" style="display:none"><div id="wechat" style="display:inline-block"> <img id="wechat_qr" src="/hexo-blog/images/wechatpay.jpg" alt="xuchengpeng 微信支付"><p>微信支付</p></div><div id="alipay" style="display:inline-block"> <img id="alipay_qr" src="/hexo-blog/images/alipay.jpg" alt="xuchengpeng 支付宝"><p>支付宝</p></div></div></div></div><div><ul class="post-copyright"><li class="post-copyright-author"> <strong>本文作者：</strong> xuchengpeng</li><li class="post-copyright-link"> <strong>本文链接：</strong> <a href="http://xuchengpeng.com/hexo-blog/2018/05/08/tcp-ip/tcp-ip-illustrated-volume1-dynamic-routing-protocols/" title="TCP/IP 详解(卷一) 动态选路协议">http://xuchengpeng.com/hexo-blog/2018/05/08/tcp-ip/tcp-ip-illustrated-volume1-dynamic-routing-protocols/</a></li><li class="post-copyright-license"> <strong>版权声明：</strong> 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li></ul></div><footer class="post-footer"><div class="post-tags"> <a href="/hexo-blog/tags/RIP/" rel="tag"># RIP</a> <a href="/hexo-blog/tags/OSPF/" rel="tag"># OSPF</a> <a href="/hexo-blog/tags/BGP/" rel="tag"># BGP</a> <a href="/hexo-blog/tags/CIDR/" rel="tag"># CIDR</a></div><div class="post-widgets"><div id="needsharebutton-postbottom"><span class="btn"><i class="fa fa-share-alt" aria-hidden="true"></i></span></div></div><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/hexo-blog/2018/05/07/tcp-ip/tcp-ip-illustrated-volume1-ip-routing/" rel="next" title="TCP/IP 详解(卷一) IP选路"><i class="fa fa-chevron-left"></i> TCP/IP 详解(卷一) IP选路</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"> <a href="/hexo-blog/2018/05/09/tcp-ip/tcp-ip-illustrated-volume1-udp-user-datagram-protocol/" rel="prev" title="TCP/IP 详解(卷一) UDP：用户数据报协议">TCP/IP 详解(卷一) UDP：用户数据报协议<i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div><div class="comments" id="comments"></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span><span class="sidebar-toggle-line sidebar-toggle-line-middle"></span><span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap"> 文章目录</li><li class="sidebar-nav-overview" data-target="site-overview-wrap"> 站点概览</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person"> <img class="site-author-image" itemprop="image" src="/hexo-blog/images/bio-photo.jpg" alt="xuchengpeng"><p class="site-author-name" itemprop="name">xuchengpeng</p><p class="site-description motion-element" itemprop="description">Valar Morghulis. Valar Dohaeris.</p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"> <a href="/hexo-blog/archives/"><span class="site-state-item-count">111</span> <span class="site-state-item-name">日志</span></a></div><div class="site-state-item site-state-categories"> <a href="/hexo-blog/categories/index.html"><span class="site-state-item-count">19</span> <span class="site-state-item-name">分类</span></a></div><div class="site-state-item site-state-tags"> <a href="/hexo-blog/tags/index.html"><span class="site-state-item-count">86</span> <span class="site-state-item-name">标签</span></a></div></nav><div class="feed-link motion-element"><a href="/hexo-blog/atom.xml" rel="alternate"><i class="fa fa-rss"></i> RSS</a></div><div class="links-of-author motion-element"><span class="links-of-author-item"><a href="https://www.google.com/maps" target="_blank" title="Wuhan, China"><i class="fa fa-fw fa-map-marker"></i> Wuhan, China</a></span><span class="links-of-author-item"><a href="mailto:xucp@outlook.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i> E-Mail</a></span><span class="links-of-author-item"><a href="https://github.com/xuchengpeng" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i> GitHub</a></span><span class="links-of-author-item"><a href="https://bitbucket.org/xuchengpeng" target="_blank" title="Bitbucket"><i class="fa fa-fw fa-bitbucket"></i> Bitbucket</a></span></div><div class="cc-license motion-element" itemprop="license"> <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank"><img src="/hexo-blog/images/cc-by-nc-sa.svg" alt="Creative Commons"></a></div><div class="links-of-blogroll motion-element links-of-blogroll-inline"><div class="links-of-blogroll-title"><i class="fa fa-fw fa-link"></i> 友情链接</div><ul class="links-of-blogroll-list"><li class="links-of-blogroll-item"> <a href="https://github.com/xuchengpeng/emacs.d" title="Chuck's Emacs Configuration" target="_blank">Chuck's Emacs Configuration</a></li><li class="links-of-blogroll-item"> <a href="http://harmonyhu.com/" title="HarmonyHu" target="_blank">HarmonyHu</a></li><li class="links-of-blogroll-item"> <a href="https://www.linode.com/" title="linode" target="_blank">linode</a></li><li class="links-of-blogroll-item"> <a href="https://github.com/shadowsocks" title="shadowsocks" target="_blank">shadowsocks</a></li><li class="links-of-blogroll-item"> <a href="https://leancloud.cn/" title="LeanCloud" target="_blank">LeanCloud</a></li><li class="links-of-blogroll-item"> <a href="https://travis-ci.org/" title="Travis CI" target="_blank">Travis CI</a></li><li class="links-of-blogroll-item"> <a href="https://github.com/theme-next/hexo-theme-next" title="NexT" target="_blank">NexT</a></li></ul></div></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#动态选路"><span class="nav-number">1.</span> <span class="nav-text">动态选路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Unix-选路守护程序"><span class="nav-number">2.</span> <span class="nav-text">Unix 选路守护程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RIP-选路信息协议"><span class="nav-number">3.</span> <span class="nav-text">RIP: 选路信息协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#报文格式"><span class="nav-number">3.1.</span> <span class="nav-text">报文格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正常运行"><span class="nav-number">3.2.</span> <span class="nav-text">正常运行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#度量"><span class="nav-number">3.3.</span> <span class="nav-text">度量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">3.4.</span> <span class="nav-text">问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RIP-版本2"><span class="nav-number">4.</span> <span class="nav-text">RIP 版本2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OSPF-开放最短路径优先"><span class="nav-number">5.</span> <span class="nav-text">OSPF: 开放最短路径优先</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BGP-边界网关协议"><span class="nav-number">6.</span> <span class="nav-text">BGP: 边界网关协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CIDR-无类型域间选路"><span class="nav-number">7.</span> <span class="nav-text">CIDR: 无类型域间选路</span></a></li></ol></div></div></section></div></aside></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2019</span><span class="with-love" id="animate"><i class="fa fa-"></i></span> <span class="author" itemprop="copyrightHolder">xuchengpeng</span> <span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-area-chart"></i></span> <span class="post-meta-item-text">站点总字数：</span> <span title="站点总字数">338k</span> <span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-coffee"></i></span> <span class="post-meta-item-text">站点阅读时长 &asymp;</span> <span title="站点阅读时长">10:14</span></div><script type="text/javascript">!function(){var e=document.createElement("script");e.src="//tajs.qq.com/stats?sId=64245444";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}()</script></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i> <span id="scrollpercent"><span>0</span>%</span></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.1/velocity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.1/velocity.ui.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.2.5/dist/jquery.fancybox.js"></script><script type="text/javascript" src="/hexo-blog/js/src/utils.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/motion.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/affix.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/schemes/pisces.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/scrollspy.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/post-details.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/bootstrap.js?v=6.3.0"></script><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script type="text/javascript">var GUEST=["nick","mail","link"],guest="nick,mail,link";guest=guest.split(",").filter(function(e){return-1<GUEST.indexOf(e)}),new Valine({el:"#comments",verify:!1,notify:!1,appId:"8cGx0mI721mXnuSact0PLKmV-gzGzoHsz",appKey:"eQc0CtLv9s4VTdObz6ux8lVW",placeholder:"Leave your comments here...",avatar:"wavatar",guest_info:guest,pageSize:"10"})</script><script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/hexo-blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script><script>AV.initialize("8cGx0mI721mXnuSact0PLKmV-gzGzoHsz","eQc0CtLv9s4VTdObz6ux8lVW")</script><script>function showTime(e){var t=new AV.Query(e),c=[],u=$(".leancloud_visitors");u.each(function(){c.push($(this).attr("id").trim())}),t.containedIn("url",c),t.find().done(function(e){var t=".leancloud-visitors-count";if(0!==e.length){for(var n=0;n<e.length;n++){var o=e[n],i=o.get("url"),s=o.get("time"),r=document.getElementById(i);$(r).find(t).text(s)}for(n=0;n<c.length;n++){i=c[n],r=document.getElementById(i);var l=$(r).find(t);""==l.text()&&l.text(0)}}else u.find(t).text(0)}).fail(function(e,t){console.log("Error: "+t.code+" "+t.message)})}function addCount(i){var e=$(".leancloud_visitors"),s=e.attr("id").trim(),r=e.attr("data-flag-title").trim(),t=new AV.Query(i);t.equalTo("url",s),t.find({success:function(e){if(0<e.length){var t=e[0];t.fetchWhenSave(!0),t.increment("time"),t.save(null,{success:function(e){$(document.getElementById(s)).find(".leancloud-visitors-count").text(e.get("time"))},error:function(e,t){console.log("Failed to save Visitor num, with error message: "+t.message)}})}else{var n=new i,o=new AV.ACL;o.setPublicReadAccess(!0),o.setPublicWriteAccess(!0),n.setACL(o),n.set("title",r),n.set("url",s),n.set("time",1),n.save(null,{success:function(e){$(document.getElementById(s)).find(".leancloud-visitors-count").text(e.get("time"))},error:function(e,t){console.log("Failed to create")}})}},error:function(e){console.log("Error:"+e.code+" "+e.message)}})}$(function(){var e=AV.Object.extend("Counter");1==$(".leancloud_visitors").length?addCount(e):1<$(".post-title-link").length&&showTime(e)})</script><script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@latest/needsharebutton.min.js"></script><script>pbOptions={iconStyle:"box",boxForm:"horizontal",position:"bottomCenter",networks:"Weibo,Wechat,Douban,QQZone,Twitter,Facebook"},new needShareButton("#needsharebutton-postbottom",pbOptions)</script></body></html>

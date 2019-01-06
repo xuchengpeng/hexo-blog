@@ -1,0 +1,319 @@
+<!DOCTYPE html><html class="theme-next gemini use-motion" lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=2"><meta name="theme-color" content="#222"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@latest/needsharebutton.min.css"><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><link href="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/themes/blue/pace-theme-flash.css" rel="stylesheet"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.2.5/dist/jquery.fancybox.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"><link href="/hexo-blog/css/main.css?v=6.3.0" rel="stylesheet" type="text/css"><link rel="apple-touch-icon" sizes="180x180" href="/hexo-blog/images/apple-touch-icon.png?v=6.3.0"><link rel="icon" type="image/png" sizes="32x32" href="/hexo-blog/images/favicon-32x32.ico?v=6.3.0"><link rel="icon" type="image/png" sizes="16x16" href="/hexo-blog/images/favicon-16x16.ico?v=6.3.0"><link rel="mask-icon" href="/hexo-blog/images/favicon-logo.svg?v=6.3.0" color="#222"><script type="text/javascript" id="hexo.configurations">var NexT=window.NexT||{},CONFIG={root:"/hexo-blog/",scheme:"Gemini",version:"6.3.0",sidebar:{position:"left",display:"post",offset:12,b2t:!1,scrollpercent:!0,onmobile:!1},fancybox:!0,fastclick:!1,lazyload:!1,tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}}}</script><meta name="description" content="ICMP经常被认为是IP层的一个组成部分。它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（TCP或UDP）使用。一些ICMP报文把差错报文返回给用户进程。 ICMP报文是在IP数据报内部被传输的，格式为：20个字节的IP首部加上后面的ICMP报文。 ICMP 报文格式中，类型字段可以有15个不同的值，以描述特定类型的ICMP报文。某些ICMP报文还使用代码字段的值来进一"><meta name="keywords" content="ICMP"><meta property="og:type" content="article"><meta property="og:title" content="TCP&#x2F;IP 详解(卷一) ICMP：Internet控制报文协议"><meta property="og:url" content="http://xuchengpeng.com/hexo-blog/2018/05/03/tcp-ip/tcp-ip-illustrated-volume1-icmp/index.html"><meta property="og:site_name" content="xuchengpeng"><meta property="og:description" content="ICMP经常被认为是IP层的一个组成部分。它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（TCP或UDP）使用。一些ICMP报文把差错报文返回给用户进程。 ICMP报文是在IP数据报内部被传输的，格式为：20个字节的IP首部加上后面的ICMP报文。 ICMP 报文格式中，类型字段可以有15个不同的值，以描述特定类型的ICMP报文。某些ICMP报文还使用代码字段的值来进一"><meta property="og:locale" content="zh-CN"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/icmp-format.jpg"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/icmp-addrmask-format.jpg"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/icmp-timestamp-format.jpg"><meta property="og:image" content="http://xuchengpeng.com/images/tcp-ip/icmp-unreachable-msg.jpg"><meta property="og:updated_time" content="2019-01-06T06:24:55.970Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="TCP&#x2F;IP 详解(卷一) ICMP：Internet控制报文协议"><meta name="twitter:description" content="ICMP经常被认为是IP层的一个组成部分。它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（TCP或UDP）使用。一些ICMP报文把差错报文返回给用户进程。 ICMP报文是在IP数据报内部被传输的，格式为：20个字节的IP首部加上后面的ICMP报文。 ICMP 报文格式中，类型字段可以有15个不同的值，以描述特定类型的ICMP报文。某些ICMP报文还使用代码字段的值来进一"><meta name="twitter:image" content="http://xuchengpeng.com/images/tcp-ip/icmp-format.jpg"><link rel="alternate" href="/hexo-blog/atom.xml" title="xuchengpeng" type="application/atom+xml"><link rel="canonical" href="http://xuchengpeng.com/hexo-blog/2018/05/03/tcp-ip/tcp-ip-illustrated-volume1-icmp/"><script type="text/javascript" id="page.configurations">CONFIG.page={sidebar:""}</script><title>TCP/IP 详解(卷一) ICMP：Internet控制报文协议 | xuchengpeng</title><noscript><style type="text/css">.sidebar-inner,.use-motion .brand,.use-motion .collection-title,.use-motion .comments,.use-motion .menu-item,.use-motion .motion-element,.use-motion .pagination,.use-motion .post-block,.use-motion .post-body,.use-motion .post-header{opacity:initial}.use-motion .logo,.use-motion .site-subtitle,.use-motion .site-title{opacity:initial;top:initial}.logo-line-after i{right:initial}</style></noscript></head><body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN"><div class="container sidebar-position-left page-post-detail"><div class="headband"></div><header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/hexo-blog/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">xuchengpeng</span><span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle">Valar Morghulis. Valar Dohaeris.</p></div><div class="site-nav-toggle"> <button aria-label="切换导航栏"><span class="btn-bar"></span><span class="btn-bar"></span><span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/hexo-blog/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>首页</a></li><li class="menu-item menu-item-archives"><a href="/hexo-blog/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>归档</a></li><li class="menu-item menu-item-categories"><a href="/hexo-blog/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i><br>分类</a></li><li class="menu-item menu-item-tags"><a href="/hexo-blog/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i><br>标签</a></li><li class="menu-item menu-item-留言"><a href="/hexo-blog/guestbook/" rel="section"><i class="menu-item-icon fa fa-fw fa-commenting"></i><br>留言</a></li><li class="menu-item menu-item-about"><a href="/hexo-blog/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i><br>关于</a></li><li class="menu-item menu-item-search"><a href="javascript:;" class="popup-trigger"><i class="menu-item-icon fa fa-search fa-fw"></i><br>搜索</a></li></ul><div class="site-search"><div class="popup search-popup local-search-popup"><div class="local-search-header clearfix"><span class="search-icon"><i class="fa fa-search"></i></span><span class="popup-btn-close"><i class="fa fa-times-circle"></i></span><div class="local-search-input-wrapper"> <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input"></div></div><div id="local-search-result"></div></div></div></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="http://xuchengpeng.com/hexo-blog/hexo-blog/2018/05/03/tcp-ip/tcp-ip-illustrated-volume1-icmp/"><span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person"><meta itemprop="name" content="xuchengpeng"><meta itemprop="description" content="Valar Morghulis. Valar Dohaeris."><meta itemprop="image" content="/hexo-blog/images/bio-photo.jpg"></span><span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization"><meta itemprop="name" content="xuchengpeng"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">TCP/IP 详解(卷一) ICMP：Internet控制报文协议</h1><div class="post-meta"><span class="post-time"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i></span> <span class="post-meta-item-text">发表于</span> <time title="创建时间：2018-05-03 10:40:15" itemprop="dateCreated datePublished" datetime="2018-05-03T10:40:15+08:00">2018-05-03</time></span> <span class="post-category"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-folder-o"></i></span> <span class="post-meta-item-text">分类于</span> <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/hexo-blog/categories/Study/" itemprop="url" rel="index"><span itemprop="name">Study</span></a></span> ， <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/hexo-blog/categories/Study/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span></span> <span class="post-comments-count"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-comment-o"></i></span> <a href="/hexo-blog/2018/05/03/tcp-ip/tcp-ip-illustrated-volume1-icmp/#comments" itemprop="discussionUrl"><span class="post-meta-item-text">评论数：</span><span class="post-comments-count valine-comment-count" data-xid="/hexo-blog/2018/05/03/tcp-ip/tcp-ip-illustrated-volume1-icmp/" itemprop="commentCount"></span></a></span> <span id="/hexo-blog/2018/05/03/tcp-ip/tcp-ip-illustrated-volume1-icmp/" class="leancloud_visitors" data-flag-title="TCP/IP 详解(卷一) ICMP：Internet控制报文协议"><span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-eye"></i></span> <span class="post-meta-item-text">阅读次数：</span><span class="leancloud-visitors-count"></span></span><div class="post-symbolscount"><span class="post-meta-item-icon"><i class="fa fa-file-word-o"></i></span> <span class="post-meta-item-text">本文字数：</span> <span title="本文字数">3.4k</span> <span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-clock-o"></i></span> <span class="post-meta-item-text">阅读时长 &asymp;</span> <span title="阅读时长">6 分钟</span></div></div></header><div class="post-body" itemprop="articleBody"><p>ICMP经常被认为是IP层的一个组成部分。它传递差错报文以及其他需要注意的信息。ICMP报文通常被IP层或更高层协议（TCP或UDP）使用。一些ICMP报文把差错报文返回给用户进程。</p><p>ICMP报文是在IP数据报内部被传输的，格式为：20个字节的IP首部加上后面的ICMP报文。</p><p>ICMP 报文格式中，类型字段可以有15个不同的值，以描述特定类型的ICMP报文。某些ICMP报文还使用代码字段的值来进一步描述不同的条件。<br>检验和字段覆盖整个ICMP报文。使用的算法与IP首部检验和算法相同。ICMP的检验和是必需的。</p><p><img src="/images/tcp-ip/icmp-format.jpg" alt=""><br><a id="more"></a></p><h2 id="ICMP-报文的类型"><a href="#ICMP-报文的类型" class="headerlink" title="ICMP 报文的类型"></a>ICMP 报文的类型</h2><table><thead><tr><th style="text-align:center">类型</th><th style="text-align:center">代码</th><th style="text-align:left">描述</th><th style="text-align:center">查询</th><th style="text-align:center">差错</th></tr></thead><tbody><tr><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:left">回显应答(Ping应答)</td><td style="text-align:center">*</td><td style="text-align:center"></td></tr><tr><td style="text-align:center">3</td><td style="text-align:center"></td><td style="text-align:left">目的不可达：</td><td style="text-align:center"></td><td style="text-align:center"></td></tr><tr><td style="text-align:center"></td><td style="text-align:center">0</td><td style="text-align:left">网络不可达</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">1</td><td style="text-align:left">主机不可达</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">2</td><td style="text-align:left">协议不可达</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">3</td><td style="text-align:left">端口不可达</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">4</td><td style="text-align:left">需要进行分片但设置了不分片比特</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">5</td><td style="text-align:left">源站选路失败</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">6</td><td style="text-align:left">目的网络不认识</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">7</td><td style="text-align:left">目的主机不认识</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">8</td><td style="text-align:left">源主机被隔离(作废不用)</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">9</td><td style="text-align:left">目的网络被强制禁止</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">10</td><td style="text-align:left">目的主机被强制禁止</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">11</td><td style="text-align:left">由于服务类型TOS，网络不可达</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">12</td><td style="text-align:left">由于服务类型TOS，主机不可达</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">13</td><td style="text-align:left">由于过滤，通信被强制禁止</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">14</td><td style="text-align:left">主机越权</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">15</td><td style="text-align:left">优先权中止生效</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center">4</td><td style="text-align:center">0</td><td style="text-align:left">源端被关闭(基本流控制)</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center">5</td><td style="text-align:center"></td><td style="text-align:left">重定向：</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">0</td><td style="text-align:left">对网络重定向</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">1</td><td style="text-align:left">对主机重定向</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">2</td><td style="text-align:left">对服务类型和网络重定向</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">3</td><td style="text-align:left">对服务类型和主机重定向</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center">8</td><td style="text-align:center">0</td><td style="text-align:left">请求回显(Ping请求)</td><td style="text-align:center">*</td><td style="text-align:center"></td></tr><tr><td style="text-align:center">9</td><td style="text-align:center">0</td><td style="text-align:left">路由器通告</td><td style="text-align:center">*</td><td style="text-align:center"></td></tr><tr><td style="text-align:center">10</td><td style="text-align:center">0</td><td style="text-align:left">路由器请求</td><td style="text-align:center">*</td><td style="text-align:center"></td></tr><tr><td style="text-align:center">11</td><td style="text-align:center"></td><td style="text-align:left">超时：</td><td style="text-align:center"></td><td style="text-align:center"></td></tr><tr><td style="text-align:center"></td><td style="text-align:center">0</td><td style="text-align:left">传输期间生存时间为0(Traceroute)</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">1</td><td style="text-align:left">在数据报组装期间生存时间为 0</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center">12</td><td style="text-align:center"></td><td style="text-align:left">参数问题：</td><td style="text-align:center"></td><td style="text-align:center"></td></tr><tr><td style="text-align:center"></td><td style="text-align:center">0</td><td style="text-align:left">坏的IP首部(包括各种差错)</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">1</td><td style="text-align:left">缺少必需的选项</td><td style="text-align:center"></td><td style="text-align:center">*</td></tr><tr><td style="text-align:center">13</td><td style="text-align:center">0</td><td style="text-align:left">时间戳请求</td><td style="text-align:center">*</td><td style="text-align:center"></td></tr><tr><td style="text-align:center">14</td><td style="text-align:center">0</td><td style="text-align:left">时间戳应答</td><td style="text-align:center">*</td><td style="text-align:center"></td></tr><tr><td style="text-align:center">15</td><td style="text-align:center">0</td><td style="text-align:left">信息请求(作废不用)</td><td style="text-align:center">*</td><td style="text-align:center"></td></tr><tr><td style="text-align:center">16</td><td style="text-align:center">0</td><td style="text-align:left">信息应答(作废不用)</td><td style="text-align:center">*</td><td style="text-align:center"></td></tr><tr><td style="text-align:center">17</td><td style="text-align:center">0</td><td style="text-align:left">地址掩码请求</td><td style="text-align:center">*</td><td style="text-align:center"></td></tr><tr><td style="text-align:center">18</td><td style="text-align:center">0</td><td style="text-align:left">地址掩码应答</td><td style="text-align:center">*</td></tr></tbody></table><p>不同类型由报文中的类型字段和代码字段来共同决定。</p><p>最后两列表明ICMP报文是一份查询报文还是一份差错报文。因为对ICMP差错报文有时需要作特殊处理，因此我们需要对它们进行区分。例如，在对ICMP差错报文进行响应时，永远不会生成另一份ICMP差错报文（如果没有这个限制规则，可能会遇到一个差错产生另一个差错的情况，而差错再产生差错，这样会无休止地循环下去）。</p><p>当发送一份ICMP差错报文时，报文始终包含IP的首部和产生ICMP差错报文的IP数据报的前8个字节。这样，接收ICMP差错报文的模块就会把它与某个特定的协议（根据IP数据报首部中的协议字段来判断）和用户进程（根据包含在IP数据报前8个字节中的TCP或UDP报文首部中的TCP或UDP端口号来判断）联系起来。</p><p>下面各种情况都不会导致产生ICMP差错报文：</p><ol><li>ICMP差错报文（但是，ICMP查询报文可能会产生ICMP差错报文）。</li><li>目的地址是广播地址或多播地址（D类地址）的IP数据报。</li><li>作为链路层广播的数据报。</li><li>不是IP分片的第一片。</li><li>源地址不是单个主机的数据报。这就是说，源地址不能为零地址、环回地址、广播地址或多播地址。</li></ol><p>这些规则是为了防止过去允许ICMP差错报文对广播分组响应所带来的广播风暴。</p><h2 id="ICMP-地址掩码请求与应答"><a href="#ICMP-地址掩码请求与应答" class="headerlink" title="ICMP 地址掩码请求与应答"></a>ICMP 地址掩码请求与应答</h2><p>ICMP地址掩码请求用于无盘系统在引导过程中获取自己的子网掩码。系统广播它的ICMP请求报文（这一过程与无盘系统在引导过程中用RARP获取IP地址是类似的）。无盘系统获取子网掩码的另一个方法是BOOTP协议。ICMP地址掩码请求和应答报文的格式如下：<br><img src="/images/tcp-ip/icmp-addrmask-format.jpg" alt=""></p><p>ICMP报文中的标识符和序列号字段由发送端任意选择设定，这些值在应答中将被返回。这样，发送端就可以把应答与请求进行匹配。</p><h2 id="ICMP-时间戳请求与应答"><a href="#ICMP-时间戳请求与应答" class="headerlink" title="ICMP 时间戳请求与应答"></a>ICMP 时间戳请求与应答</h2><p>ICMP时间戳请求允许系统向另一个系统查询当前的时间。返回的建议值是自午夜开始计算的毫秒数，协调的统一时间（Coordinated Universal Time,UTC）（早期的参考手册认为UTC是格林尼治时间）。这种ICMP报文的好处是它提供了毫秒级的分辨率，而利用其他方法从别的主机获取的时间（如某些Unix系统提供的rdate命令）只能提供秒级的分辨率。由于返回的时间是从午夜开始计算的，因此调用者必须通过其他方法获知当时的日期，这是它的一个缺陷。</p><p><img src="/images/tcp-ip/icmp-timestamp-format.jpg" alt=""></p><p>请求端填写发起时间戳，然后发送报文。应答系统收到请求报文时填写接收时间戳，在发送应答时填写发送时间戳。但是，实际上，大多数的实现把后面两个字段都设成相同的值（提供三个字段的原因是可以让发送方分别计算发送请求的时间和发送应答的时间）。</p><h2 id="ICMP-不可达差错"><a href="#ICMP-不可达差错" class="headerlink" title="ICMP 不可达差错"></a>ICMP 不可达差错</h2><p>ICMP的一个规则是，ICMP差错报文必须包括生成该差错报文的数据报IP首部（包含任何选项），还必须至少包括跟在该IP首部后面的前8个字节。</p><p>导致差错的数据报中的IP首部要被送回的原因是因为IP首部中包含了协议字段，使得ICMP可以知道如何解释后面的8个字节。事实上，UDP首部中的内容是源端口号和目的端口号，如果我们来查看TCP首部,可以发现源端口和目的端口被包含在TCP首部的前8个字节中。</p><p><img src="/images/tcp-ip/icmp-unreachable-msg.jpg" alt=""></p><h2 id="ICMP-报文的-4-4BSD-处理"><a href="#ICMP-报文的-4-4BSD-处理" class="headerlink" title="ICMP 报文的 4.4BSD 处理"></a>ICMP 报文的 4.4BSD 处理</h2><table><thead><tr><th style="text-align:center">类型</th><th style="text-align:center">代码</th><th style="text-align:left">描述</th><th style="text-align:left">处理方法</th></tr></thead><tbody><tr><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:left">回显应答(Ping应答)</td><td style="text-align:left">用户进程</td></tr><tr><td style="text-align:center">3</td><td style="text-align:center"></td><td style="text-align:left">目的不可达：</td><td style="text-align:left"></td></tr><tr><td style="text-align:center"></td><td style="text-align:center">0</td><td style="text-align:left">网络不可达</td><td style="text-align:left">“无路由到达主机”</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">1</td><td style="text-align:left">主机不可达</td><td style="text-align:left">“无路由到达主机”</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">2</td><td style="text-align:left">协议不可达</td><td style="text-align:left">“连接被拒绝”</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">3</td><td style="text-align:left">端口不可达</td><td style="text-align:left">“连接被拒绝”</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">4</td><td style="text-align:left">需要进行分片但设置了不分片比特</td><td style="text-align:left">“报文太长”</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">5</td><td style="text-align:left">源站选路失败</td><td style="text-align:left">“无路由到达主机”</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">6</td><td style="text-align:left">目的网络不认识</td><td style="text-align:left">“无路由到达主机”</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">7</td><td style="text-align:left">目的主机不认识</td><td style="text-align:left">“无路由到达主机”</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">8</td><td style="text-align:left">源主机被隔离(作废不用)</td><td style="text-align:left">“无路由到达主机”</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">9</td><td style="text-align:left">目的网络被强制禁止</td><td style="text-align:left">“无路由到达主机”</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">10</td><td style="text-align:left">目的主机被强制禁止</td><td style="text-align:left">“无路由到达主机”</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">11</td><td style="text-align:left">由于服务类型TOS，网络不可达</td><td style="text-align:left">“无路由到达主机”</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">12</td><td style="text-align:left">由于服务类型TOS，主机不可达</td><td style="text-align:left">“无路由到达主机”</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">13</td><td style="text-align:left">由于过滤，通信被强制禁止</td><td style="text-align:left">(忽略)</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">14</td><td style="text-align:left">主机越权</td><td style="text-align:left">(忽略)</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">15</td><td style="text-align:left">优先权中止生效</td><td style="text-align:left">(忽略)</td></tr><tr><td style="text-align:center">4</td><td style="text-align:center">0</td><td style="text-align:left">源端被关闭(quench)</td><td style="text-align:left">TCP由内核处理，UDP则忽略</td></tr><tr><td style="text-align:center">5</td><td style="text-align:center"></td><td style="text-align:left">重定向：</td><td style="text-align:left"></td></tr><tr><td style="text-align:center"></td><td style="text-align:center">0</td><td style="text-align:left">对网络重定向</td><td style="text-align:left">内核更新路由表</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">1</td><td style="text-align:left">对主机重定向</td><td style="text-align:left">内核更新路由表</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">2</td><td style="text-align:left">对服务类型和网络重定向</td><td style="text-align:left">内核更新路由表</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">3</td><td style="text-align:left">对服务类型和主机重定向</td><td style="text-align:left">内核更新路由表</td></tr><tr><td style="text-align:center">8</td><td style="text-align:center">0</td><td style="text-align:left">请求回显(Ping请求)</td><td style="text-align:left"></td></tr><tr><td style="text-align:center">9</td><td style="text-align:center">0</td><td style="text-align:left">路由器通告</td><td style="text-align:left">用户进程</td></tr><tr><td style="text-align:center">10</td><td style="text-align:center">0</td><td style="text-align:left">路由器请求</td><td style="text-align:left">用户进程</td></tr><tr><td style="text-align:center">11</td><td style="text-align:center"></td><td style="text-align:left">超时：</td><td style="text-align:left"></td></tr><tr><td style="text-align:center"></td><td style="text-align:center">0</td><td style="text-align:left">传输期间生存时间为0(Traceroute)</td><td style="text-align:left">用户进程</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">1</td><td style="text-align:left">在数据报组装期间生存时间为 0</td><td style="text-align:left">用户进程</td></tr><tr><td style="text-align:center">12</td><td style="text-align:center"></td><td style="text-align:left">参数问题：</td><td style="text-align:left"></td></tr><tr><td style="text-align:center"></td><td style="text-align:center">0</td><td style="text-align:left">坏的IP首部(包括各种差错)</td><td style="text-align:left">“协议不可用”</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">1</td><td style="text-align:left">缺少必需的选项</td><td style="text-align:left">“协议不可用”</td></tr><tr><td style="text-align:center">13</td><td style="text-align:center">0</td><td style="text-align:left">时间戳请求</td><td style="text-align:left">内核产生应答</td></tr><tr><td style="text-align:center">14</td><td style="text-align:center">0</td><td style="text-align:left">时间戳应答</td><td style="text-align:left">用户进程</td></tr><tr><td style="text-align:center">15</td><td style="text-align:center">0</td><td style="text-align:left">信息请求(作废不用)</td><td style="text-align:left">(忽略)</td></tr><tr><td style="text-align:center">16</td><td style="text-align:center">0</td><td style="text-align:left">信息应答(作废不用)</td><td style="text-align:left">用户进程</td></tr><tr><td style="text-align:center">17</td><td style="text-align:center">0</td><td style="text-align:left">地址掩码请求</td><td style="text-align:left">内核产生应答</td></tr><tr><td style="text-align:center">18</td><td style="text-align:center">0</td><td style="text-align:left">地址掩码应答</td><td style="text-align:left">用户进程</td></tr></tbody></table><p>如果最后一列标明是“内核”，那么ICMP就由内核来处理。如果最后一列指明是“用户进程”，那么报文就被传送到所有在内核中登记的用户进程，以读取收到的ICMP报文。如果不存在任何这样的用户进程，那么报文就悄悄地被丢弃（这些用户进程还会收到所有其他类型的ICMP报文的拷贝，虽然它们应该由内核来处理，当然用户进程只有在内核处理以后才能收到这些报文）。有一些报文完全被忽略。最后，如果最后一列标明的是引号内的一串字符，那么它就是对应的Unix差错。</p></div><div class="popular-posts-header">相关文章</div><ul class="popular-posts"><li class="popular-posts-item"><div class="popular-posts-title"><a href="/hexo-blog/2018/05/09/tcp-ip/tcp-ip-illustrated-volume1-udp-user-datagram-protocol/" rel="bookmark">TCP/IP 详解(卷一) UDP：用户数据报协议</a></div></li></ul><div><div style="padding:10px 0;margin:20px auto;width:90%;text-align:center"><div></div> <button id="rewardButton" disable="enable" onclick='var qr=document.getElementById("QR");"none"===qr.style.display?qr.style.display="block":qr.style.display="none"'> <span>打赏</span></button><div id="QR" style="display:none"><div id="wechat" style="display:inline-block"> <img id="wechat_qr" src="/hexo-blog/images/wechatpay.jpg" alt="xuchengpeng 微信支付"><p>微信支付</p></div><div id="alipay" style="display:inline-block"> <img id="alipay_qr" src="/hexo-blog/images/alipay.jpg" alt="xuchengpeng 支付宝"><p>支付宝</p></div></div></div></div><div><ul class="post-copyright"><li class="post-copyright-author"> <strong>本文作者：</strong> xuchengpeng</li><li class="post-copyright-link"> <strong>本文链接：</strong> <a href="http://xuchengpeng.com/hexo-blog/2018/05/03/tcp-ip/tcp-ip-illustrated-volume1-icmp/" title="TCP/IP 详解(卷一) ICMP：Internet控制报文协议">http://xuchengpeng.com/hexo-blog/2018/05/03/tcp-ip/tcp-ip-illustrated-volume1-icmp/</a></li><li class="post-copyright-license"> <strong>版权声明：</strong> 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li></ul></div><footer class="post-footer"><div class="post-tags"> <a href="/hexo-blog/tags/ICMP/" rel="tag"># ICMP</a></div><div class="post-widgets"><div id="needsharebutton-postbottom"><span class="btn"><i class="fa fa-share-alt" aria-hidden="true"></i></span></div></div><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/hexo-blog/2018/05/03/tcp-ip/tcp-ip-illustrated-volume1-rarp/" rel="next" title="TCP/IP 详解(卷一) RARP：逆地址解析协议"><i class="fa fa-chevron-left"></i> TCP/IP 详解(卷一) RARP：逆地址解析协议</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"> <a href="/hexo-blog/2018/05/04/tcp-ip/tcp-ip-illustrated-volume1-ping/" rel="prev" title="TCP/IP 详解(卷一) Ping程序">TCP/IP 详解(卷一) Ping程序<i class="fa fa-chevron-right"></i></a></div></div></footer></div></article><div class="post-spread"></div></div></div><div class="comments" id="comments"></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span><span class="sidebar-toggle-line sidebar-toggle-line-middle"></span><span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap"> 文章目录</li><li class="sidebar-nav-overview" data-target="site-overview-wrap"> 站点概览</li></ul><section class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person"> <img class="site-author-image" itemprop="image" src="/hexo-blog/images/bio-photo.jpg" alt="xuchengpeng"><p class="site-author-name" itemprop="name">xuchengpeng</p><p class="site-description motion-element" itemprop="description">Valar Morghulis. Valar Dohaeris.</p></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"> <a href="/hexo-blog/archives/"><span class="site-state-item-count">111</span> <span class="site-state-item-name">日志</span></a></div><div class="site-state-item site-state-categories"> <a href="/hexo-blog/categories/index.html"><span class="site-state-item-count">19</span> <span class="site-state-item-name">分类</span></a></div><div class="site-state-item site-state-tags"> <a href="/hexo-blog/tags/index.html"><span class="site-state-item-count">86</span> <span class="site-state-item-name">标签</span></a></div></nav><div class="feed-link motion-element"><a href="/hexo-blog/atom.xml" rel="alternate"><i class="fa fa-rss"></i> RSS</a></div><div class="links-of-author motion-element"><span class="links-of-author-item"><a href="https://www.google.com/maps" target="_blank" title="Wuhan, China"><i class="fa fa-fw fa-map-marker"></i> Wuhan, China</a></span><span class="links-of-author-item"><a href="mailto:xucp@outlook.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i> E-Mail</a></span><span class="links-of-author-item"><a href="https://github.com/xuchengpeng" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i> GitHub</a></span><span class="links-of-author-item"><a href="https://bitbucket.org/xuchengpeng" target="_blank" title="Bitbucket"><i class="fa fa-fw fa-bitbucket"></i> Bitbucket</a></span></div><div class="cc-license motion-element" itemprop="license"> <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank"><img src="/hexo-blog/images/cc-by-nc-sa.svg" alt="Creative Commons"></a></div><div class="links-of-blogroll motion-element links-of-blogroll-inline"><div class="links-of-blogroll-title"><i class="fa fa-fw fa-link"></i> 友情链接</div><ul class="links-of-blogroll-list"><li class="links-of-blogroll-item"> <a href="https://github.com/xuchengpeng/emacs.d" title="Chuck's Emacs Configuration" target="_blank">Chuck's Emacs Configuration</a></li><li class="links-of-blogroll-item"> <a href="http://harmonyhu.com/" title="HarmonyHu" target="_blank">HarmonyHu</a></li><li class="links-of-blogroll-item"> <a href="https://www.linode.com/" title="linode" target="_blank">linode</a></li><li class="links-of-blogroll-item"> <a href="https://github.com/shadowsocks" title="shadowsocks" target="_blank">shadowsocks</a></li><li class="links-of-blogroll-item"> <a href="https://leancloud.cn/" title="LeanCloud" target="_blank">LeanCloud</a></li><li class="links-of-blogroll-item"> <a href="https://travis-ci.org/" title="Travis CI" target="_blank">Travis CI</a></li><li class="links-of-blogroll-item"> <a href="https://github.com/theme-next/hexo-theme-next" title="NexT" target="_blank">NexT</a></li></ul></div></div></section><section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#ICMP-报文的类型"><span class="nav-number">1.</span> <span class="nav-text">ICMP 报文的类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ICMP-地址掩码请求与应答"><span class="nav-number">2.</span> <span class="nav-text">ICMP 地址掩码请求与应答</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ICMP-时间戳请求与应答"><span class="nav-number">3.</span> <span class="nav-text">ICMP 时间戳请求与应答</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ICMP-不可达差错"><span class="nav-number">4.</span> <span class="nav-text">ICMP 不可达差错</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ICMP-报文的-4-4BSD-处理"><span class="nav-number">5.</span> <span class="nav-text">ICMP 报文的 4.4BSD 处理</span></a></li></ol></div></div></section></div></aside></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2019</span><span class="with-love" id="animate"><i class="fa fa-"></i></span> <span class="author" itemprop="copyrightHolder">xuchengpeng</span> <span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-area-chart"></i></span> <span class="post-meta-item-text">站点总字数：</span> <span title="站点总字数">338k</span> <span class="post-meta-divider">|</span><span class="post-meta-item-icon"><i class="fa fa-coffee"></i></span> <span class="post-meta-item-text">站点阅读时长 &asymp;</span> <span title="站点阅读时长">10:14</span></div><script type="text/javascript">!function(){var e=document.createElement("script");e.src="//tajs.qq.com/stats?sId=64245444";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}()</script></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i> <span id="scrollpercent"><span>0</span>%</span></div></div><script type="text/javascript">"[object Function]"!==Object.prototype.toString.call(window.Promise)&&(window.Promise=null)</script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.1/velocity.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.1/velocity.ui.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.2.5/dist/jquery.fancybox.js"></script><script type="text/javascript" src="/hexo-blog/js/src/utils.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/motion.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/affix.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/schemes/pisces.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/scrollspy.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/post-details.js?v=6.3.0"></script><script type="text/javascript" src="/hexo-blog/js/src/bootstrap.js?v=6.3.0"></script><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script type="text/javascript">var GUEST=["nick","mail","link"],guest="nick,mail,link";guest=guest.split(",").filter(function(e){return-1<GUEST.indexOf(e)}),new Valine({el:"#comments",verify:!1,notify:!1,appId:"8cGx0mI721mXnuSact0PLKmV-gzGzoHsz",appKey:"eQc0CtLv9s4VTdObz6ux8lVW",placeholder:"Leave your comments here...",avatar:"wavatar",guest_info:guest,pageSize:"10"})</script><script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/hexo-blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script><script>AV.initialize("8cGx0mI721mXnuSact0PLKmV-gzGzoHsz","eQc0CtLv9s4VTdObz6ux8lVW")</script><script>function showTime(e){var t=new AV.Query(e),c=[],u=$(".leancloud_visitors");u.each(function(){c.push($(this).attr("id").trim())}),t.containedIn("url",c),t.find().done(function(e){var t=".leancloud-visitors-count";if(0!==e.length){for(var n=0;n<e.length;n++){var o=e[n],i=o.get("url"),s=o.get("time"),r=document.getElementById(i);$(r).find(t).text(s)}for(n=0;n<c.length;n++){i=c[n],r=document.getElementById(i);var l=$(r).find(t);""==l.text()&&l.text(0)}}else u.find(t).text(0)}).fail(function(e,t){console.log("Error: "+t.code+" "+t.message)})}function addCount(i){var e=$(".leancloud_visitors"),s=e.attr("id").trim(),r=e.attr("data-flag-title").trim(),t=new AV.Query(i);t.equalTo("url",s),t.find({success:function(e){if(0<e.length){var t=e[0];t.fetchWhenSave(!0),t.increment("time"),t.save(null,{success:function(e){$(document.getElementById(s)).find(".leancloud-visitors-count").text(e.get("time"))},error:function(e,t){console.log("Failed to save Visitor num, with error message: "+t.message)}})}else{var n=new i,o=new AV.ACL;o.setPublicReadAccess(!0),o.setPublicWriteAccess(!0),n.setACL(o),n.set("title",r),n.set("url",s),n.set("time",1),n.save(null,{success:function(e){$(document.getElementById(s)).find(".leancloud-visitors-count").text(e.get("time"))},error:function(e,t){console.log("Failed to create")}})}},error:function(e){console.log("Error:"+e.code+" "+e.message)}})}$(function(){var e=AV.Object.extend("Counter");1==$(".leancloud_visitors").length?addCount(e):1<$(".post-title-link").length&&showTime(e)})</script><script src="https://cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@latest/needsharebutton.min.js"></script><script>pbOptions={iconStyle:"box",boxForm:"horizontal",position:"bottomCenter",networks:"Weibo,Wechat,Douban,QQZone,Twitter,Facebook"},new needShareButton("#needsharebutton-postbottom",pbOptions)</script></body></html>
