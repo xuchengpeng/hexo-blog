@@ -46,4 +46,4 @@ branches:
 
 env:
  global:
-   - GH_REF: github.com/xuchengpeng/xuchengpeng.github.io.git # GitHub博客仓库的地址
+   - GH_REF: github.com/xuchengpeng/hexo-blog.git # GitHub博客仓库的地址
